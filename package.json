@@ -1,0 +1,20 @@
+{
+  "name": "udemy_nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pfsuarez/udemy_nodejs.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pfsuarez/udemy_nodejs/issues"
+  },
+  "homepage": "https://github.com/pfsuarez/udemy_nodejs#readme"
+}
