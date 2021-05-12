@@ -8,7 +8,7 @@ import shopRoutes from "./routes/shop.js";
 const app = express();
 
 app.use(bodyParser.urlencoded());
-app.use(adminRoutes);
+app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use((req, res, next) => {
