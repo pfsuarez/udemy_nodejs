@@ -10,18 +10,18 @@ const router = express.Router();
 router.get("/", (req, res, next) => {
   //return res.sendFile(path.join(__dirname, "views" , "shop.html"));
 
-  //pug
-  //res.render("shop", { prods: products, docTitle: "Shop", path: "/"});
+  //pug & ejs
+  res.render("shop", { prods: products, pageTitle: "Shop", path: "/"});
 
   //handlebars
-  res.render("shop", {
-    prods: products,
-    docTitle: "Shop",
-    //layout: false,
-    hasProducts: products.length > 0,
-    activeShop: true,
-    productCss: true
-  });
+  // res.render("shop", {
+  //   prods: products,
+  //   pageTitle: "Shop",
+  //   //layout: false,
+  //   hasProducts: products.length > 0,
+  //   activeShop: true,
+  //   productCss: true
+  // });
 });
 
 export default router;

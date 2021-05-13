@@ -4,7 +4,7 @@ import bodyParser from "body-parser";
 import path from "path";
 
 //template engine
-import expressHbs from "express-handlebars";
+//import expressHbs from "express-handlebars";
 
 import { __dirname } from "./helper/helper.js";
 import adminRoutes from "./routes/admin.js";
@@ -12,14 +12,20 @@ import shopRoutes from "./routes/shop.js";
 
 const app = express();
 
-app.engine("hbs", expressHbs({
-  layoutsDir: "views/layouts/", // <- it's only necessary if you put the layout in another location
-  defaultLayout: "main-layout",
-  extname: "hbs"
-})); // <- the way to use handlebars template engine .hbs
-app.set("view engine", "hbs"); // <- the way to use handlebars template engine. View filename extension must be .hbs
+//handlebars
+// app.engine("hbs", expressHbs({
+//   layoutsDir: "views/layouts/", // <- it's only necessary if you put the layout in another location
+//   defaultLayout: "main-layout",
+//   extname: "hbs"
+// })); // <- the way to use handlebars template engine .hbs
+//app.set("view engine", "hbs"); // <- the way to use handlebars template engine. View filename extension must be .hbs
 
+//pug
 //app.set("view engine", "pug"); // <- the way to use Pug template engine
+
+//ejs
+app.set("view engine", "ejs");
+
 app.set("views", "views"); // <- not necessary, by default templates must be in views folder
 
 app.use(bodyParser.urlencoded());
@@ -35,7 +41,7 @@ app.use((req, res, next) => {
 
   //handlebars
   res.status(404).render("404", { 
-    docTitle: "Page Not Found", 
+    pageTitle: "Page Not Found", 
     //layout: false 
   });
 });
