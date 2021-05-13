@@ -9,7 +9,19 @@ const router = express.Router();
 
 router.get("/", (req, res, next) => {
   //return res.sendFile(path.join(__dirname, "views" , "shop.html"));
-  res.render("shop", { prods: products, docTitle: "Shop", path: "/" });
+
+  //pug
+  //res.render("shop", { prods: products, docTitle: "Shop", path: "/"});
+
+  //handlebars
+  res.render("shop", {
+    prods: products,
+    docTitle: "Shop",
+    //layout: false,
+    hasProducts: products.length > 0,
+    activeShop: true,
+    productCss: true
+  });
 });
 
 export default router;
