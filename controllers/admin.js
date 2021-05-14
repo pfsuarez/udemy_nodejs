@@ -14,7 +14,11 @@ export const postAddProduct = (req, res, next) => {
 };
 
 export const getProducts = (req, res, next) => {
-  Product.fetchAll().then((products) =>
-    res.render("shop/product-list", { prods: products, pageTitle: "Shop", path: "/" })
-  );
+  Product.fetchAll().then((products) => {
+    res.render("admin/products", {
+      prods: products,
+      path: "/admin/products",
+      pageTitle: "Admin Products",
+    });
+  });
 };
