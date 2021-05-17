@@ -18,4 +18,7 @@ router.get("/edit-product/:productId", adminController.getEditProduct);
 
 router.post("/edit-product", adminController.postEditProduct);
 
+//Delete Product
+router.post("/delete-product", adminController.postDeleteProduct);
+
 export default router;

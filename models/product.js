@@ -1,5 +1,7 @@
 import fs from "fs";
 import path from "path";
+
+import { Cart } from "./cart.js";
 import { __dirname } from "../helper/helper.js";
 
 const filePath = path.join(__dirname, "data", "products.json");
@@ -61,6 +63,23 @@ export class Product {
         const product = products.find((p) => p.id === id);
 
         resolve(product);
+      });
+    });
+  }
+
+  static deleteById(id) {
+    return new Promise((resolve) => {
+      getProductsFromFile().then((products) => {
+        const product = products.find(prod => prod.id === id);
+        const updatedProducts = products.filter((p) => p.id !== id);
+
+        fs.writeFile(filePath, JSON.stringify(updatedProducts), (error) => {
+          if (!error) {
+            Cart.deleteProduct(id, product.price);
+          }
+        });
+
+        resolve();
       });
     });
   }
