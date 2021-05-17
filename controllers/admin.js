@@ -4,6 +4,7 @@ export const getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
     pageTitle: "Add a Product",
     path: "/admin/add-product",
+    editing: false
   });
 };
 
@@ -20,15 +21,26 @@ export const postAddProduct = (req, res, next) => {
 
 export const getEditProduct = (req, res, next) => {
   const editMode = req.query.edit;
+  const productId = req.params.productId;
 
-  if(!editMode) {
+  console.log("editMode", editMode);
+  console.log("productId", productId);
+
+  if (!editMode) {
     return res.redirect("/");
   }
 
-  res.render("admin/edit-product", {
-    pageTitle: "Edit a Product",
-    path: "/admin/edit-product",
-    editing: editMode
+  Product.findById(productId).then((product) => {
+    if(!product) {
+      return res.redirect("/");
+    }
+
+    res.render("admin/edit-product", {
+      pageTitle: "Edit a Product",
+      path: "/admin/edit-product",
+      editing: editMode,
+      product,
+    });
   });
 };
 
