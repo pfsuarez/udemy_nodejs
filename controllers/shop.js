@@ -1,4 +1,5 @@
 import { Product } from "../models/product.js";
+import { Cart } from "../models/cart.js";
 
 export const getProducts = (req, res, next) => {
   Product.fetchAll().then((products) =>
@@ -41,7 +42,11 @@ export const getCart = (req, res, next) => {
 export const postCart = (req, res, next) => {
   const prodId = req.body.productId;
   console.log("PRODUCT CART", prodId);
-  res.redirect("/cart");
+
+  Product.findById(prodId).then(product => {
+    Cart.addProduct(prodId, product.price);
+    res.redirect("/cart");
+  })
 }
 
 export const getOrders = (req, res, next) => {
