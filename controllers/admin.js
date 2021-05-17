@@ -1,7 +1,7 @@
 import { Product } from "../models/product.js";
 
 export const getAddProduct = (req, res, next) => {
-  res.render("admin/add-product", {
+  res.render("admin/edit-product", {
     pageTitle: "Add a Product",
     path: "/admin/add-product",
   });
@@ -16,6 +16,20 @@ export const postAddProduct = (req, res, next) => {
   const product = new Product(title, imageUrl, description, price);
   product.save();
   res.redirect("/");
+};
+
+export const getEditProduct = (req, res, next) => {
+  const editMode = req.query.edit;
+
+  if(!editMode) {
+    return res.redirect("/");
+  }
+
+  res.render("admin/edit-product", {
+    pageTitle: "Edit a Product",
+    path: "/admin/edit-product",
+    editing: editMode
+  });
 };
 
 export const getProducts = (req, res, next) => {
