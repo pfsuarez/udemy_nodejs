@@ -5,7 +5,7 @@ import { __dirname } from "../helper/helper.js";
 const filePath = path.join(__dirname, "data", "products.json");
 
 const getProductsFromFile = () => {
-  return new Promise((resolve, reject) => {    
+  return new Promise((resolve, reject) => {
     fs.readFile(filePath, (error, fileContent) => {
       let products = [];
       if (!error) {
@@ -38,5 +38,15 @@ export class Product {
 
   static fetchAll() {
     return getProductsFromFile();
+  }
+
+  static findById(id) {
+    return new Promise((resolve) => {
+      getProductsFromFile().then((products) => {
+        const product = products.find((p) => p.id === id);
+
+        resolve(product);
+      });
+    });
   }
 }
