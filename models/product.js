@@ -26,6 +26,7 @@ export class Product {
   }
 
   save() {
+    this.id = Math.random().toString();
     getProductsFromFile().then((products) => {
       products.push(this);
 
