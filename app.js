@@ -12,6 +12,8 @@ import { get404Page } from "./controllers/error.js";
 
 import { Product } from "./models/product.js";
 import { User } from "./models/user.js";
+import { Cart } from "./models/cart.js";
+import { CartItem } from "./models/cart-item.js";
 
 const app = express();
 
@@ -21,8 +23,8 @@ app.set("views", "views"); // <- not necessary, by default templates must be in 
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use((req,res,next) => {
-  User.findByPk(1).then(user => {
+app.use((req, res, next) => {
+  User.findByPk(1).then((user) => {
     req.user = user;
     next();
   });
@@ -38,6 +40,10 @@ Product.belongsTo(User, {
   onDelete: "CASCADE",
 });
 User.hasMany(Product);
+User.hasOne(Cart);
+Cart.belongsTo(User);
+Cart.belongsToMany(Product, { through: CartItem });
+Product.belongsToMany(Cart, { through: CartItem });
 
 const useForce = false;
 sequelize
@@ -45,16 +51,16 @@ sequelize
   .then((result) => {
     return User.findByPk(1);
   })
-  .then(user => {
-    if(!user) {
+  .then((user) => {
+    if (!user) {
       return User.create({
         name: "Pepe",
-        email: "pepe@test.com"
+        email: "pepe@test.com",
       });
     }
     return Promise.resolve(user);
   })
-  .then(user => {
+  .then((user) => {
     app.listen(3000);
   })
   .catch((err) => console.log(err));
