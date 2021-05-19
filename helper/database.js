@@ -1,6 +1,8 @@
-import Sequelize from "sequelize";
+import { Sequelize } from "sequelize";
 
-export default sequelize = new Sequelize("node-complete", "root", "root123", {
+const sequelize = new Sequelize("node-complete", "root", "root123", {
   dialect: "mysql",
-  host: "localhosst"
+  host: "localhost",
 });
+
+export default sequelize;

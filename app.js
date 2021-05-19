@@ -3,6 +3,7 @@ import bodyParser from "body-parser";
 import path from "path";
 
 import { __dirname } from "./helper/helper.js";
+import sequelize from "./helper/database.js";
 
 import adminRoutes from "./routes/admin.js";
 import shopRoutes from "./routes/shop.js";
@@ -21,4 +22,9 @@ app.use(shopRoutes);
 
 app.use(get404Page);
 
-app.listen(3000);
+sequelize
+  .sync()
+  .then((result) => {
+    app.listen(3000);
+  })
+  .catch((err) => console.log(err));
