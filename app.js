@@ -10,6 +10,9 @@ import shopRoutes from "./routes/shop.js";
 
 import { get404Page } from "./controllers/error.js";
 
+import { Product } from "./models/product.js";
+import { User } from "./models/user.js";
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -17,14 +20,41 @@ app.set("views", "views"); // <- not necessary, by default templates must be in 
 
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use((req,res,next) => {
+  User.findByPk(1).then(user => {
+    req.user = user;
+    next();
+  });
+});
+
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
 
 app.use(get404Page);
 
+Product.belongsTo(User, {
+  constraints: true,
+  onDelete: "CASCADE",
+});
+User.hasMany(Product);
+
+const useForce = false;
 sequelize
-  .sync()
+  .sync({ force: useForce })
   .then((result) => {
+    return User.findByPk(1);
+  })
+  .then(user => {
+    if(!user) {
+      return User.create({
+        name: "Pepe",
+        email: "pepe@test.com"
+      });
+    }
+    return Promise.resolve(user);
+  })
+  .then(user => {
     app.listen(3000);
   })
   .catch((err) => console.log(err));

@@ -14,12 +14,15 @@ export const postAddProduct = (req, res, next) => {
   const description = req.body.description;
   const price = req.body.price;
 
-  Product.create({
-    title,
-    price,
-    imageUrl,
-    description,
-  })
+  //Sequalize object gives you the createProduct method
+  req.user
+    .createProduct({
+      title,
+      price,
+      imageUrl,
+      description,
+      userId: req.user.id,
+    })
     .then(() => res.redirect("/"))
     .catch((err) => console.log(err));
 };
@@ -31,9 +34,22 @@ export const postEditProduct = (req, res, next) => {
   const description = req.body.description;
   const price = req.body.price;
 
-  const updatedProduct = new Product(id, title, imageUrl, description, price);
-  updatedProduct.save();
-  res.redirect("/admin/products");
+  // const updatedProduct = new Product(id, title, imageUrl, description, price);
+  // updatedProduct.save();
+
+  Product.findByPk(id)
+    .then((product) => {
+      product.title = title;
+      product.price = price;
+      product.description = description;
+      product.imageUrl = imageUrl;
+
+      return product.save();
+    })
+    .then(() => {
+      res.redirect("/admin/products");
+    })
+    .catch((err) => console.log(err));
 };
 
 export const getEditProduct = (req, res, next) => {
@@ -44,7 +60,7 @@ export const getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
 
-  Product.findById(productId).then(([product]) => {
+  Product.findByPk(productId).then((product) => {
     if (!product) {
       return res.redirect("/");
     }
@@ -53,7 +69,7 @@ export const getEditProduct = (req, res, next) => {
       pageTitle: "Edit a Product",
       path: "/admin/edit-product",
       editing: editMode,
-      product: product[0],
+      product: product,
     });
   });
 };
@@ -73,7 +89,8 @@ export const getProducts = (req, res, next) => {
 export const postDeleteProduct = (req, res, next) => {
   const id = req.body.productId;
 
-  Product.deleteById(id).then(() => {
-    return res.redirect("/admin/products");
-  });
+  Product.findByPk(id)
+    .then((product) => product.destroy())
+    .then(() => res.redirect("/admin/products"))
+    .catch((err) => console.log(err));
 };
