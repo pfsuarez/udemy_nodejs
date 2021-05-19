@@ -60,22 +60,30 @@ export const getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
 
-  Product.findByPk(productId).then((product) => {
-    if (!product) {
-      return res.redirect("/");
-    }
+  req.user
+    .getProducts({
+      where: {
+        id: productId,
+      },
+    })
+    .then((products) => {
+      const product = products[0];
+      if (!product) {
+        return res.redirect("/");
+      }
 
-    res.render("admin/edit-product", {
-      pageTitle: "Edit a Product",
-      path: "/admin/edit-product",
-      editing: editMode,
-      product: product,
+      res.render("admin/edit-product", {
+        pageTitle: "Edit a Product",
+        path: "/admin/edit-product",
+        editing: editMode,
+        product: product,
+      });
     });
-  });
 };
 
 export const getProducts = (req, res, next) => {
-  Product.findAll()
+  req.user
+    .getProducts()
     .then((products) => {
       res.render("admin/products", {
         prods: products,
