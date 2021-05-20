@@ -1,5 +1,4 @@
 import { Product } from "../models/product.js";
-import { Cart } from "../models/cart.js";
 
 export const getProducts = (req, res, next) => {
   Product.findAll()
@@ -134,4 +133,30 @@ export const getCheckout = (req, res, next) => {
     path: "/checkout",
     pageTitle: "Checkout",
   });
+};
+
+export const postOrder = (req, res, next) => {
+  let fetchedProducts;
+
+  req.user
+    .getCart()
+    .then((cart) => {
+      return cart.getProducts();
+    })
+    .then((products) => {
+      fetchedProducts = products;
+      return req.user.createOrder();
+    })
+    .then((order) => {
+      return order.addProducts(
+        fetchedProducts.map((product) => {
+          product.orderItem = {
+            qty: product.cartItem.qty,
+          };
+          return product;
+        })
+      );
+    })
+    .then(()=> res.redirect("/orders"))
+    .catch((err) => console.log(err));
 };
