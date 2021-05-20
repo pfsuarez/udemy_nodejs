@@ -1,8 +1,15 @@
-import { Sequelize } from "sequelize";
+import mongodb from "mongodb";
 
-const sequelize = new Sequelize("node-complete", "root", "root123", {
-  dialect: "mysql",
-  host: "localhost",
-});
+const MongoClient = mongodb.MongoClient;
 
-export default sequelize;
+const password = "YOUR_PASSWORD"
+
+export const mongoConnect = (callback) => {
+  MongoClient.connect(
+    `mongodb+srv://picateclas:${password}@cluster0.rsjvy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+  )
+    .then((client) => {
+      callback(client);
+    })
+    .catch((err) => console.log(err));
+};
