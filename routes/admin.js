@@ -11,15 +11,15 @@ router.get("/add-product", adminController.getAddProduct);
 // /admin/add-product => POST
 router.post("/add-product", adminController.postAddProduct);
 
-// // /admin/product => GET
+// /admin/product => GET
 router.get("/products", adminController.getProducts);
 
-// //Routers (get/post) to edit a product
-// router.get("/edit-product/:productId", adminController.getEditProduct);
+//Routers (get/post) to edit a product
+router.get("/edit-product/:productId", adminController.getEditProduct);
 
-// router.post("/edit-product", adminController.postEditProduct);
+router.post("/edit-product", adminController.postEditProduct);
 
-// //Delete Product
+//Delete Product
 // router.post("/delete-product", adminController.postDeleteProduct);
 
 export default router;

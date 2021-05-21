@@ -4,20 +4,28 @@ import { getDb } from "../helper/database.js";
 const collectionName = "product";
 
 export class Product {
-  constructor(title, price, description, imageUrl) {
-    this.title = title;
-    this.price = price;
-    this.description = description;
-    this.imageUrl = imageUrl;
+  constructor(title, price, description, imageUrl, id) {
+    this.title = title.trim();
+    this.price = price.trim();
+    this.description = description.trim();
+    this.imageUrl = imageUrl.trim();
+
+    if (id) {
+      this._id = new mongodb.ObjectId(id);
+    }
   }
 
   save() {
-    const db = getDb();
-    return db
-      .collection(collectionName)
-      .insertOne(this)
-      .then((result) => console.log(result))
-      .catch((err) => console.log(err));
+    let dbOp;
+
+    if (this._id) {
+      dbOp = getDb()
+        .collection(collectionName)
+        .updateOne({ _id: this._id }, { $set: this });
+    } else {
+      dbOp = getDb().collection(collectionName).insertOne(this);
+    }
+    return dbOp;
   }
 
   static fetchAll() {
@@ -29,6 +37,5 @@ export class Product {
       .collection(collectionName)
       .find({ _id: new mongodb.ObjectId(id) })
       .next();
-    //.then((product) => product);
   }
 }

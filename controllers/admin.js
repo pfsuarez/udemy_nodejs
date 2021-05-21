@@ -1,4 +1,7 @@
+import mongodb from "mongodb";
 import { Product } from "../models/product.js";
+
+const ObjectId = mongodb.ObjectId;
 
 export const getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -28,21 +31,17 @@ export const postEditProduct = (req, res, next) => {
   const description = req.body.description;
   const price = req.body.price;
 
-  // const updatedProduct = new Product(id, title, imageUrl, description, price);
-  // updatedProduct.save();
+  const updatedProduct = new Product(
+    title,
+    price,
+    description,
+    imageUrl,
+    id
+  );
 
-  Product.findByPk(id)
-    .then((product) => {
-      product.title = title;
-      product.price = price;
-      product.description = description;
-      product.imageUrl = imageUrl;
-
-      return product.save();
-    })
-    .then(() => {
-      res.redirect("/admin/products");
-    })
+  updatedProduct
+    .save()
+    .then(() => res.redirect("/admin/products"))
     .catch((err) => console.log(err));
 };
 
@@ -54,14 +53,8 @@ export const getEditProduct = (req, res, next) => {
     return res.redirect("/");
   }
 
-  req.user
-    .getProducts({
-      where: {
-        id: productId,
-      },
-    })
-    .then((products) => {
-      const product = products[0];
+  Product.findById(productId)
+    .then((product) => {
       if (!product) {
         return res.redirect("/");
       }
@@ -72,12 +65,12 @@ export const getEditProduct = (req, res, next) => {
         editing: editMode,
         product: product,
       });
-    });
+    })
+    .catch((err) => console.log(err));
 };
 
 export const getProducts = (req, res, next) => {
-  req.user
-    .getProducts()
+  Product.fetchAll()
     .then((products) => {
       res.render("admin/products", {
         prods: products,
