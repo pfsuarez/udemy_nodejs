@@ -39,15 +39,13 @@ export const getIndex = (req, res, next) => {
 };
 
 export const getCart = (req, res, next) => {
-  req.user
-    .getCart()
-    .then((products) => {
-      res.render("shop/cart", {
-        products: products,
-        path: "cart",
-        pageTitle: "Your Cart",
-      });
+  req.user.getCart().then((products) => {
+    res.render("shop/cart", {
+      products: products,
+      path: "cart",
+      pageTitle: "Your Cart",
     });
+  });
 };
 
 export const postCart = (req, res, next) => {
@@ -60,22 +58,12 @@ export const postCart = (req, res, next) => {
 };
 
 export const postCartDeleteItem = (req, res, next) => {
-  const productId = +req.body.productId;
+  const productId = req.body.productId;
 
   req.user
-    .getCart()
-    .then((cart) => {
-      return cart.getProducts({
-        where: {
-          id: productId,
-        },
-      });
-    })
-    .then((products) => {
-      const product = products[0];
-      return product.cartItem.destroy();
-    })
-    .then(() => res.redirect("/cart"));
+    .deleteItemFromCart(productId)
+    .then(() => res.redirect("/cart"))
+    .catch((err) => console.log(err));
 };
 
 export const getOrders = (req, res, next) => {

@@ -59,6 +59,19 @@ export class User {
       });
   }
 
+  deleteItemFromCart(productId) {
+    const updatedCartItems = this.cart.items.filter(
+      (i) => i.productId.toString() !== productId.toString()
+    );
+
+    return getDb()
+      .collection(collectionName)
+      .updateOne(
+        { _id: this.id },
+        { $set: { cart: { items: updatedCartItems } } }
+      );
+  }
+
   static findById(id) {
     return getDb()
       .collection(collectionName)
