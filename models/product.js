@@ -1,5 +1,5 @@
 import mongodb from "mongodb";
-import { getDb } from "../helper/database.js";
+import { getDb, getObjectId } from "../helper/database.js";
 
 const collectionName = "products";
 
@@ -12,7 +12,7 @@ export class Product {
     this.userId = userId;
 
     if (id) {
-      this._id = new mongodb.ObjectId(id);
+      this._id = getObjectId(id);
     }
   }
 
@@ -36,13 +36,13 @@ export class Product {
   static findById(id) {
     return getDb()
       .collection(collectionName)
-      .find({ _id: new mongodb.ObjectId(id) })
+      .find({ _id: getObjectId(id) })
       .next();
   }
 
   static deleteById(id) {
     return getDb()
       .collection(collectionName)
-      .deleteOne({ _id: new mongodb.ObjectId(id) });
+      .deleteOne({ _id: getObjectId(id) });
   }
 }

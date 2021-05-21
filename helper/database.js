@@ -2,7 +2,7 @@ import mongodb from "mongodb";
 
 const MongoClient = mongodb.MongoClient;
 
-const password = "@root123";
+const password = "";
 
 let _db;
 
@@ -26,3 +26,5 @@ export const getDb = () => {
 
   throw new Error("No Database found!");
 };
+
+export const getObjectId = (id) => new mongodb.ObjectId(id);

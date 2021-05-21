@@ -16,8 +16,6 @@ export const getProducts = (req, res, next) => {
 export const getProduct = (req, res, next) => {
   const productId = req.params.productId;
 
-  console.log("GET PRODUCT", productId);
-
   Product.findById(productId).then((product) => {
     console.log("PRODUCT", product);
     res.render("shop/product-detail", {
@@ -43,9 +41,7 @@ export const getIndex = (req, res, next) => {
 export const getCart = (req, res, next) => {
   req.user
     .getCart()
-    .then((cart) => cart.getProducts())
     .then((products) => {
-      console.log("GetCart", products);
       res.render("shop/cart", {
         products: products,
         path: "cart",
@@ -55,41 +51,10 @@ export const getCart = (req, res, next) => {
 };
 
 export const postCart = (req, res, next) => {
-  const prodId = +req.body.productId;
-  let fetchedCart;
-  let qty;
+  const prodId = req.body.productId;
 
-  req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts({
-        where: {
-          id: prodId,
-        },
-      });
-    })
-    .then((products) => {
-      let product;
-      qty = 1;
-      if (products.length > 0) {
-        product = products[0];
-      }
-
-      if (product) {
-        const oldQty = product.cartItem.qty;
-        qty = oldQty + 1;
-      }
-
-      return Product.findByPk(prodId);
-    })
-    .then((product) => {
-      return fetchedCart.addProduct(product, {
-        through: {
-          qty: qty,
-        },
-      });
-    })
+  Product.findById(prodId)
+    .then((product) => req.user.addToCart(product))
     .then(() => res.redirect("/cart"))
     .catch((err) => console.log(err));
 };
