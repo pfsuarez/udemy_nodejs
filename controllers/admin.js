@@ -1,7 +1,4 @@
-import mongodb from "mongodb";
 import { Product } from "../models/product.js";
-
-const ObjectId = mongodb.ObjectId;
 
 export const getAddProduct = (req, res, next) => {
   res.render("admin/edit-product", {
@@ -31,13 +28,7 @@ export const postEditProduct = (req, res, next) => {
   const description = req.body.description;
   const price = req.body.price;
 
-  const updatedProduct = new Product(
-    title,
-    price,
-    description,
-    imageUrl,
-    id
-  );
+  const updatedProduct = new Product(title, price, description, imageUrl, id);
 
   updatedProduct
     .save()
@@ -84,8 +75,7 @@ export const getProducts = (req, res, next) => {
 export const postDeleteProduct = (req, res, next) => {
   const id = req.body.productId;
 
-  Product.findByPk(id)
-    .then((product) => product.destroy())
+  Product.deleteById(id)
     .then(() => res.redirect("/admin/products"))
     .catch((err) => console.log(err));
 };

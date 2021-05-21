@@ -38,4 +38,10 @@ export class Product {
       .find({ _id: new mongodb.ObjectId(id) })
       .next();
   }
+
+  static deleteById(id) {
+    return getDb()
+      .collection(collectionName)
+      .deleteOne({ _id: new mongodb.ObjectId(id) });
+  }
 }
