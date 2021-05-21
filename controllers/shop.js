@@ -68,8 +68,9 @@ export const postCartDeleteItem = (req, res, next) => {
 
 export const getOrders = (req, res, next) => {
   req.user
-    .getOrders({ include: ["products"] })
+    .getOrders()
     .then((orders) => {
+      console.log("orders", orders);
       res.render("shop/orders", {
         path: "orders",
         pageTitle: "Your Orders",
@@ -79,40 +80,16 @@ export const getOrders = (req, res, next) => {
     .catch((err) => console.log(err));
 };
 
-export const getCheckout = (req, res, next) => {
-  res.render("shop/checkout", {
-    path: "/checkout",
-    pageTitle: "Checkout",
-  });
-};
+// export const getCheckout = (req, res, next) => {
+//   res.render("shop/checkout", {
+//     path: "/checkout",
+//     pageTitle: "Checkout",
+//   });
+// };
 
 export const postOrder = (req, res, next) => {
-  let fetchedCart;
-  let fetchedProducts;
-
   req.user
-    .getCart()
-    .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts();
-    })
-    .then((products) => {
-      fetchedProducts = products;
-      return req.user.createOrder();
-    })
-    .then((order) => {
-      return order.addProducts(
-        fetchedProducts.map((product) => {
-          product.orderItem = {
-            qty: product.cartItem.qty,
-          };
-          return product;
-        })
-      );
-    })
-    .then(() => {
-      return fetchedCart.setProducts(null);
-    })
+    .addOrder()
     .then(() => res.redirect("/orders"))
     .catch((err) => console.log(err));
 };

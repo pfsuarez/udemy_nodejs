@@ -72,6 +72,42 @@ export class User {
       );
   }
 
+  addOrder() {
+    return this.getCart()
+      .then((products) => {
+        const order = {
+          items: products,
+          user: {
+            _id: this.id,
+            name: this.name,
+            email: this.email,
+          },
+        };
+
+        return getDb().collection("orders").insertOne(order);
+      })
+      .then(() => {
+        this.cart = { items: [] };
+
+        return getDb()
+          .collection(collectionName)
+          .updateOne({ _id: this.id }, { $set: { cart: this.cart } });
+      });
+  }
+
+  getOrders() {
+    // return getDb()
+    //   .collection("orders")
+    //   .find()
+    //   .toArray();
+
+    
+    return getDb()
+      .collection("orders")
+      .find({ "user._id": this.id })
+      .toArray();
+  }
+
   static findById(id) {
     return getDb()
       .collection(collectionName)
