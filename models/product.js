@@ -1,3 +1,4 @@
+import mongodb from "mongodb";
 import { getDb } from "../helper/database.js";
 
 const collectionName = "product";
@@ -20,9 +21,14 @@ export class Product {
   }
 
   static fetchAll() {
+    return getDb().collection(collectionName).find().toArray();
+  }
+
+  static findById(id) {
     return getDb()
       .collection(collectionName)
-      .find()
-      .toArray();
+      .find({ _id: new mongodb.ObjectId(id) })
+      .next();
+    //.then((product) => product);
   }
 }
