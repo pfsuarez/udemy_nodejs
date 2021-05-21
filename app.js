@@ -6,7 +6,7 @@ import { __dirname } from "./helper/helper.js";
 import { mongoConnect } from "./helper/database.js";
 
 import adminRoutes from "./routes/admin.js";
-// import shopRoutes from "./routes/shop.js";
+import shopRoutes from "./routes/shop.js";
 
 import { get404Page } from "./controllers/error.js";
 
@@ -23,7 +23,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/admin", adminRoutes);
-// app.use(shopRoutes);
+app.use(shopRoutes);
 
 app.use(get404Page);
 

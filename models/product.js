@@ -1,5 +1,7 @@
 import { getDb } from "../helper/database.js";
 
+const collectionName = "product";
+
 export class Product {
   constructor(title, price, description, imageUrl) {
     this.title = title;
@@ -10,9 +12,17 @@ export class Product {
 
   save() {
     const db = getDb();
-    return db.collection("product")
+    return db
+      .collection(collectionName)
       .insertOne(this)
       .then((result) => console.log(result))
       .catch((err) => console.log(err));
+  }
+
+  static fetchAll() {
+    return getDb()
+      .collection(collectionName)
+      .find()
+      .toArray();
   }
 }
