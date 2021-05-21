@@ -2,14 +2,30 @@ import mongodb from "mongodb";
 
 const MongoClient = mongodb.MongoClient;
 
-const password = "YOUR_PASSWORD"
+const password = "@root123";
 
-export const mongoConnect = (callback) => {
-  MongoClient.connect(
-    `mongodb+srv://picateclas:${password}@cluster0.rsjvy.mongodb.net/myFirstDatabase?retryWrites=true&w=majority`
+let _db;
+
+export const mongoConnect = () => {
+  console.log("before mongoconnect");
+  return MongoClient.connect(
+    `mongodb+srv://picateclas:${password}@cluster0.rsjvy.mongodb.net/shop?retryWrites=true&w=majority`
   )
     .then((client) => {
-      callback(client);
+      console.log("", client.db());
+      _db = client.db();
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
+};
+
+export const getDb = () => {
+  console.log("getDB()");
+  if (_db) {
+    return _db;
+  }
+
+  throw new Error("No Database found!");
 };

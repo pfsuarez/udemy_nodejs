@@ -13,16 +13,10 @@ export const postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl;
   const description = req.body.description;
   const price = req.body.price;
+  const product = new Product(title, price, description, imageUrl);
 
-  //Sequalize object gives you the createProduct method
-  req.user
-    .createProduct({
-      title,
-      price,
-      imageUrl,
-      description,
-      userId: req.user.id,
-    })
+  product
+    .save()
     .then(() => res.redirect("/"))
     .catch((err) => console.log(err));
 };

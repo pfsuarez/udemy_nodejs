@@ -7,18 +7,19 @@ const router = express.Router();
 // /admin/add-product => GET
 router.get("/add-product", adminController.getAddProduct);
 
-// /admin/product => GET
-router.get("/products", adminController.getProducts);
 
 // /admin/add-product => POST
 router.post("/add-product", adminController.postAddProduct);
 
-//Routers (get/post) to edit a product
-router.get("/edit-product/:productId", adminController.getEditProduct);
+// // /admin/product => GET
+// router.get("/products", adminController.getProducts);
 
-router.post("/edit-product", adminController.postEditProduct);
+// //Routers (get/post) to edit a product
+// router.get("/edit-product/:productId", adminController.getEditProduct);
 
-//Delete Product
-router.post("/delete-product", adminController.postDeleteProduct);
+// router.post("/edit-product", adminController.postEditProduct);
+
+// //Delete Product
+// router.post("/delete-product", adminController.postDeleteProduct);
 
 export default router;

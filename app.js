@@ -5,7 +5,7 @@ import path from "path";
 import { __dirname } from "./helper/helper.js";
 import { mongoConnect } from "./helper/database.js";
 
-// import adminRoutes from "./routes/admin.js";
+import adminRoutes from "./routes/admin.js";
 // import shopRoutes from "./routes/shop.js";
 
 import { get404Page } from "./controllers/error.js";
@@ -18,14 +18,15 @@ app.set("views", "views"); // <- not necessary, by default templates must be in 
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, "public")));
 
-app.use((req, res, next) => {});
+app.use((req, res, next) => {
+  next();
+});
 
-// app.use("/admin", adminRoutes);
+app.use("/admin", adminRoutes);
 // app.use(shopRoutes);
 
 app.use(get404Page);
 
-mongoConnect((client) => {
-  console.log("running app", client);
+mongoConnect().then(() => {
   app.listen(3000);
 });
