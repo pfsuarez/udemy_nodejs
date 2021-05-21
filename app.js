@@ -10,6 +10,8 @@ import shopRoutes from "./routes/shop.js";
 
 import { get404Page } from "./controllers/error.js";
 
+import { User } from "./models/user.js";
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -19,7 +21,13 @@ app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use((req, res, next) => {
-  next();
+  const userId = "60a78efc230d7d0aa7545377";
+  User.findById(userId)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
 });
 
 app.use("/admin", adminRoutes);
