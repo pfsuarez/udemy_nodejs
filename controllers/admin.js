@@ -13,12 +13,14 @@ export const postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl.trim();
   const description = req.body.description.trim();
   const price = req.body.price;
+  const userId = req.user._id;
 
   const product = new Product({
     title,
     price,
     description,
     imageUrl,
+    userId: req.user //passing entire user object, mongoose will map user _id
   });
 
   product
