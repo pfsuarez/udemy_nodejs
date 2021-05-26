@@ -77,7 +77,6 @@ export const getProducts = (req, res, next) => {
     // .select("title price -_id") //specify fields names. using - exclude that field
     // .populate("userId", "name") // get the fields from the relationship. Second param specify wich fields
     .then((products) => {
-      console.log(products);
       res.render("admin/products", {
         prods: products,
         path: "/admin/products",

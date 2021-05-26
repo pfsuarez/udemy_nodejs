@@ -26,6 +26,21 @@ const userSchema = new Schema({
       },
     ],
   },
+  order: {
+    items: [
+      {
+        productId: {
+          type: Schema.Types.ObjectId,
+          ref: "Product",
+          required: true,
+        },
+        qty: {
+          type: Number,
+          required: true,
+        },
+      },
+    ],
+  },
 });
 
 userSchema.methods.addToCart = function (product) {
@@ -61,46 +76,9 @@ userSchema.methods.removeFromCart = function (productId) {
   return this.save();
 };
 
+userSchema.methods.clearCart = function() {
+  this.cart.items = [];
+  return this.save();
+};
+
 export const User = mongoose.model("User", userSchema);
-
-//   addOrder() {
-//     return this.getCart()
-//       .then((products) => {
-//         const order = {
-//           items: products,
-//           user: {
-//             _id: this.id,
-//             name: this.name,
-//             email: this.email,
-//           },
-//         };
-
-//         return getDb().collection("orders").insertOne(order);
-//       })
-//       .then(() => {
-//         this.cart = { items: [] };
-
-//         return getDb()
-//           .collection(collectionName)
-//           .updateOne({ _id: this.id }, { $set: { cart: this.cart } });
-//       });
-//   }
-
-//   getOrders() {
-//     // return getDb()
-//     //   .collection("orders")
-//     //   .find()
-//     //   .toArray();
-
-//     return getDb()
-//       .collection("orders")
-//       .find({ "user._id": this.id })
-//       .toArray();
-//   }
-
-//   static findById(id) {
-//     return getDb()
-//       .collection(collectionName)
-//       .findOne({ _id: getObjectId(id) });
-//   }
-//}
