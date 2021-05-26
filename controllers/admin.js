@@ -20,7 +20,7 @@ export const postAddProduct = (req, res, next) => {
     price,
     description,
     imageUrl,
-    userId: req.user //passing entire user object, mongoose will map user _id
+    userId: req.user, //passing entire user object, mongoose will map user _id
   });
 
   product
@@ -74,7 +74,10 @@ export const getEditProduct = (req, res, next) => {
 
 export const getProducts = (req, res, next) => {
   Product.find()
+    // .select("title price -_id") //specify fields names. using - exclude that field
+    // .populate("userId", "name") // get the fields from the relationship. Second param specify wich fields
     .then((products) => {
+      console.log(products);
       res.render("admin/products", {
         prods: products,
         path: "/admin/products",
