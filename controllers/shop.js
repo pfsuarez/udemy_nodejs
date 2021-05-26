@@ -1,7 +1,7 @@
 import { Product } from "../models/product.js";
 
 export const getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       console.log("PRODUCTS", products);
       res.render("shop/product-list", {
@@ -27,7 +27,7 @@ export const getProduct = (req, res, next) => {
 };
 
 export const getIndex = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("shop/index", {
         prods: products,
@@ -79,13 +79,6 @@ export const getOrders = (req, res, next) => {
     })
     .catch((err) => console.log(err));
 };
-
-// export const getCheckout = (req, res, next) => {
-//   res.render("shop/checkout", {
-//     path: "/checkout",
-//     pageTitle: "Checkout",
-//   });
-// };
 
 export const postOrder = (req, res, next) => {
   req.user
