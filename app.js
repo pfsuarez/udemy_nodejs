@@ -11,7 +11,7 @@ import shopRoutes from "./routes/shop.js";
 
 import { get404Page } from "./controllers/error.js";
 
-//import { User } from "./models/user.js";
+import { User } from "./models/user.js";
 
 const app = express();
 
@@ -21,15 +21,15 @@ app.set("views", "views"); // <- not necessary, by default templates must be in 
 app.use(bodyParser.urlencoded());
 app.use(express.static(path.join(__dirname, "public")));
 
-//app.use((req, res, next) => {
-  // const userId = "60a78efc230d7d0aa7545377";
-  // User.findById(userId)
-  //   .then((user) => {
-  //     req.user = new User(user.name, user.email, user.cart, user._id);
-  //     next();
-  //   })
-  //   .catch((err) => console.log(err));
-//});
+app.use((req, res, next) => {
+  const userId = "60ae21b17712422ce067d2f5";
+  User.findById(userId)
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
@@ -43,6 +43,18 @@ mongoose
     `mongodb+srv://picateclas:${password}@cluster0.rsjvy.mongodb.net/shop?retryWrites=true&w=majority`
   )
   .then((result) => {
+    User.findOne().then((userDb) => {
+      if (!userDb) {
+        const user = new User({
+          name: "Pepe",
+          email: "pepe@test.com",
+          cart: {
+            items: [],
+          },
+        });
+        user.save();
+      }
+    });
     app.listen(3000);
   })
   .catch((err) => console.log(err));
