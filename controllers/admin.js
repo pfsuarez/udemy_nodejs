@@ -9,9 +9,9 @@ export const getAddProduct = (req, res, next) => {
 };
 
 export const postAddProduct = (req, res, next) => {
-  const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
-  const description = req.body.description;
+  const title = req.body.title.trim();
+  const imageUrl = req.body.imageUrl.trim();
+  const description = req.body.description.trim();
   const price = req.body.price;
 
   const product = new Product({
@@ -29,22 +29,19 @@ export const postAddProduct = (req, res, next) => {
 
 export const postEditProduct = (req, res, next) => {
   const id = req.body.productId;
-  const title = req.body.title;
-  const imageUrl = req.body.imageUrl;
-  const description = req.body.description;
+  const title = req.body.title.trim();
+  const imageUrl = req.body.imageUrl.trim();
+  const description = req.body.description.trim();
   const price = req.body.price;
 
-  const updatedProduct = new Product(
-    title,
-    price,
-    description,
-    imageUrl,
-    req.user._id,
-    id
-  );
-
-  updatedProduct
-    .save()
+  Product.findById(id)
+    .then((product) => {
+      product.title = title;
+      product.imageUrl = imageUrl;
+      product.description = description;
+      product.price = price;
+      return product.save();
+    })
     .then(() => res.redirect("/admin/products"))
     .catch((err) => console.log(err));
 };
@@ -74,7 +71,7 @@ export const getEditProduct = (req, res, next) => {
 };
 
 export const getProducts = (req, res, next) => {
-  Product.fetchAll()
+  Product.find()
     .then((products) => {
       res.render("admin/products", {
         prods: products,
