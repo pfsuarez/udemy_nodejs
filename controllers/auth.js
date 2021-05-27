@@ -1,5 +1,5 @@
+import { User } from "../models/user.js";
 export const getLogin = (req, res, next) => {
-  console.log("", req.session.isLoggedId);
   res.render("auth/login", {
     path: "/login",
     pageTitle: "Login",
@@ -9,6 +9,13 @@ export const getLogin = (req, res, next) => {
 
 export const postLogin = (req, res, next) => {
   //res.setHeader("Set-Cookie", "loggedIn=true");
-  req.session.isLoggedId = true;
-  res.redirect("/");
+  const userId = "60ae21b17712422ce067d2f5";
+
+  User.findById(userId)
+    .then((user) => {
+      req.session.isLoggedIn = true;
+      req.session.user = user;
+      res.redirect("/");
+    })
+    .catch((err) => console.log(err));
 };

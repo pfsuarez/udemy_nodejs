@@ -16,7 +16,7 @@ import { get404Page } from "./controllers/error.js";
 
 import { User } from "./models/user.js";
 
-const password = "NNzpIXWH0MQmnfyx";
+const password = "";
 const MONGODB_URI = `mongodb+srv://picateclas:${password}@cluster0.rsjvy.mongodb.net/shop?retryWrites=true&w=majority`;
 
 const app = express();
@@ -40,16 +40,6 @@ app.use(
     store: store
   })
 );
-
-app.use((req, res, next) => {
-  const userId = "60ae21b17712422ce067d2f5";
-  User.findById(userId)
-    .then((user) => {
-      req.user = user;
-      next();
-    })
-    .catch((err) => console.log(err));
-});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);

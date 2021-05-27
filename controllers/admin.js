@@ -5,7 +5,7 @@ export const getAddProduct = (req, res, next) => {
     pageTitle: "Add a Product",
     path: "/admin/add-product",
     editing: false,
-    isAuthenticated: req.isLoggedIn,
+    isAuthenticated: req.session.isLoggedIn,
   });
 };
 
@@ -14,14 +14,14 @@ export const postAddProduct = (req, res, next) => {
   const imageUrl = req.body.imageUrl.trim();
   const description = req.body.description.trim();
   const price = req.body.price;
-  const userId = req.user._id;
+  const userId = req.session.user._id;
 
   const product = new Product({
     title,
     price,
     description,
     imageUrl,
-    userId: req.user, //passing entire user object, mongoose will map user _id
+    userId: req.session.user, //passing entire user object, mongoose will map user _id
   });
 
   product
@@ -68,7 +68,7 @@ export const getEditProduct = (req, res, next) => {
         path: "/admin/edit-product",
         editing: editMode,
         product: product,
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn
       });
     })
     .catch((err) => console.log(err));
@@ -83,7 +83,7 @@ export const getProducts = (req, res, next) => {
         prods: products,
         path: "/admin/products",
         pageTitle: "Admin Products",
-        isAuthenticated: req.isLoggedIn,
+        isAuthenticated: req.session.isLoggedIn,
       });
     })
     .catch((err) => console.log(err));
