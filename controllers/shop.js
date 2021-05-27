@@ -4,7 +4,6 @@ import { Order } from "../models/order.js";
 export const getProducts = (req, res, next) => {
   Product.find()
     .then((products) => {
-      console.log("PRODUCTS", products);
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "All Products",
