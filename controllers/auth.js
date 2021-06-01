@@ -1,9 +1,18 @@
 import { User } from "../models/user.js";
+
 export const getLogin = (req, res, next) => {
   res.render("auth/login", {
     path: "/login",
     pageTitle: "Login",
     isAuthenticated: req.isLoggedIn,
+  });
+};
+
+export const getSignup = (req, res, next) => {
+  res.render("auth/signup", {
+    path: "/signup",
+    pageTitle: "Signup",
+    isAuthenticated: false,
   });
 };
 
@@ -21,6 +30,8 @@ export const postLogin = (req, res, next) => {
     })
     .catch((err) => console.log(err));
 };
+
+export const postSignup = (req, res, next) => {};
 
 export const postLogout = (req, res, next) => {
   req.session.destroy(() => {
