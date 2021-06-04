@@ -18,16 +18,35 @@ export const getSignup = (req, res, next) => {
 };
 
 export const postLogin = (req, res, next) => {
-  //res.setHeader("Set-Cookie", "loggedIn=true");
+  const email = req.body.email;
+  const password = req.body.password;
   const userId = "60ae21b17712422ce067d2f5";
 
-  User.findById(userId)
+  User.findOne({
+    email,
+  })
     .then((user) => {
-      req.session.isLoggedIn = true;
-      req.session.user = user;
-      req.session.save(() => {
-        res.redirect("/");
-      });
+      if (!user) {
+        return res.redirect("/login");
+      }
+
+      return bcrypt
+        .compare(password, user.password)
+        .then((doMatch) => {
+          if (doMatch) {
+            req.session.isLoggedIn = true;
+            req.session.user = user;
+            return req.session.save(() => {
+              res.redirect("/");
+            });
+          }
+
+          res.redirect("/login");
+        })
+        .catch((err) => {
+          console.log("LOGIN", err);
+          res.redirect("/login");
+        });
     })
     .catch((err) => console.log(err));
 };
