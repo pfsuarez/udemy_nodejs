@@ -2,31 +2,45 @@ import bcrypt from "bcryptjs";
 import { User } from "../models/user.js";
 
 export const getLogin = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+
   res.render("auth/login", {
     path: "/login",
     pageTitle: "Login",
-    isAuthenticated: req.isLoggedIn,
+    errorMessage: message,
   });
 };
 
 export const getSignup = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+
   res.render("auth/signup", {
     path: "/signup",
     pageTitle: "Signup",
-    isAuthenticated: false,
+    errorMessage: message,
   });
 };
 
 export const postLogin = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const userId = "60ae21b17712422ce067d2f5";
 
   User.findOne({
     email,
   })
     .then((user) => {
       if (!user) {
+        req.flash("error", "Invalid email or password!");
         return res.redirect("/login");
       }
 
@@ -41,6 +55,7 @@ export const postLogin = (req, res, next) => {
             });
           }
 
+          req.flash("error", "Invalid email or password!");
           res.redirect("/login");
         })
         .catch((err) => {
@@ -59,6 +74,7 @@ export const postSignup = (req, res, next) => {
   User.findOne({ email })
     .then((userDoc) => {
       if (userDoc) {
+        req.flash("error", "Email currently in use!");
         return res.redirect("/signup");
       }
 
