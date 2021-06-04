@@ -158,7 +158,7 @@ export const getNewPassword = (req, res, next) => {
   })
     .then((user) => {
       if (!user) {
-        return res.redirect("/reset");
+        return res.redirect("/login");
       }
 
       let message = req.flash("error");
@@ -172,8 +172,37 @@ export const getNewPassword = (req, res, next) => {
         path: "/new-password",
         pageTitle: "New Password",
         errorMessage: message,
-        userId: user._id.toString()
+        userId: user._id.toString(),
+        passwordToken: token,
       });
+    })
+    .catch((err) => console.log(err));
+};
+
+export const postNewPassword = (req, res, next) => {
+  const newPassword = req.body.password;
+  const userId = req.body.userId;
+  const passwordToken = req.body.passwordToken;
+
+  let userDb;
+
+  User.findOne({
+    resetToken: passwordToken,
+    resetTokenExpiration: { $gt: Date.now() },
+    _id: userId,
+  })
+    .then((user) => {
+      userDb = user;
+      return bcrypt.hash(newPassword, 12);
+    })
+    .then((hashedPassword) => {
+      userDb.password = hashedPassword;
+      userDb.resetToken = undefined;
+      userDb.resetTokenExpiration = undefined;
+      return userDb.save();
+    })
+    .then(() => {
+      res.redirect("/login");
     })
     .catch((err) => console.log(err));
 };
