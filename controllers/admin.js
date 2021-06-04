@@ -38,13 +38,16 @@ export const postEditProduct = (req, res, next) => {
 
   Product.findById(id)
     .then((product) => {
+      if (product.userId.toString() !== req.user._id.toString()) {
+        return res.redirect("/");
+      }
+
       product.title = title;
       product.imageUrl = imageUrl;
       product.description = description;
       product.price = price;
-      return product.save();
+      return product.save().then(() => res.redirect("/admin/products"));
     })
-    .then(() => res.redirect("/admin/products"))
     .catch((err) => console.log(err));
 };
 
@@ -73,7 +76,7 @@ export const getEditProduct = (req, res, next) => {
 };
 
 export const getProducts = (req, res, next) => {
-  Product.find({userId: req.user._id})
+  Product.find({ userId: req.user._id })
     // .select("title price -_id") //specify fields names. using - exclude that field
     // .populate("userId", "name") // get the fields from the relationship. Second param specify wich fields
     .then((products) => {
@@ -87,9 +90,9 @@ export const getProducts = (req, res, next) => {
 };
 
 export const postDeleteProduct = (req, res, next) => {
-  const id = req.body.productId;
+  const productId = req.body.productId;
 
-  Product.findByIdAndRemove(id)
+  Product.deleteOne({ _id: productId, userId: req.user._id })
     .then(() => res.redirect("/admin/products"))
     .catch((err) => console.log(err));
 };
