@@ -73,7 +73,7 @@ export const getEditProduct = (req, res, next) => {
 };
 
 export const getProducts = (req, res, next) => {
-  Product.find()
+  Product.find({userId: req.user._id})
     // .select("title price -_id") //specify fields names. using - exclude that field
     // .populate("userId", "name") // get the fields from the relationship. Second param specify wich fields
     .then((products) => {
