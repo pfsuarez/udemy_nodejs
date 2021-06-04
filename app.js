@@ -6,6 +6,8 @@ import path from "path";
 import mongoose from "mongoose";
 import connectMongodbSession from "connect-mongodb-session";
 
+import csrf from "csurf";
+
 import { __dirname } from "./helper/helper.js";
 
 import adminRoutes from "./routes/admin.js";
@@ -18,6 +20,8 @@ import { User } from "./models/user.js";
 
 const password = "";
 const MONGODB_URI = `mongodb+srv://picateclas:${password}@cluster0.rsjvy.mongodb.net/shop?retryWrites=true&w=majority`;
+
+const csrfProtection = csrf({});
 
 const app = express();
 
@@ -41,6 +45,8 @@ app.use(
   })
 );
 
+app.use(csrfProtection);
+
 app.use((req, res, next) => {
   if (!req.session.user) {
     return next();
@@ -52,6 +58,12 @@ app.use((req, res, next) => {
       next();
     })
     .catch((err) => console.log(err));
+});
+
+app.use((req, res, next) => {
+  res.locals.isAuthenticated = req.session.isLoggedIn;
+  res.locals.csrfToken = req.csrfToken();
+  next();
 });
 
 app.use("/admin", adminRoutes);
