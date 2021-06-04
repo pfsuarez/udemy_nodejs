@@ -1,3 +1,4 @@
+import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { User } from "../models/user.js";
 
@@ -101,5 +102,49 @@ export const postSignup = (req, res, next) => {
 export const postLogout = (req, res, next) => {
   req.session.destroy(() => {
     res.redirect("/");
+  });
+};
+
+export const getReset = (req, res, next) => {
+  let message = req.flash("error");
+  if (message.length > 0) {
+    message = message[0];
+  } else {
+    message = null;
+  }
+
+  res.render("auth/reset", {
+    path: "/reset",
+    pageTitle: "Password Reset",
+    errorMessage: message,
+  });
+};
+
+export const postReset = (req, res, next) => {
+  const email = req.body.email;
+
+  crypto.randomBytes(32, (err, buffer) => {
+    if (err) {
+      return res.redirect("/reset");
+    }
+
+    const token = buffer.toString("hex");
+
+    User.findOne({ email })
+      .then((user) => {
+        if (!user) {
+          req.flash("error", "Account not valid!");
+          return res.redirect("/reset");
+        }
+
+        user.resetToken = token;
+        user.resetTokenExpiration = Date.now() + 3600000;
+        return user.save().then(() => {
+          console.log(`http://localhost:3000/reset/${token}`);
+          res.redirect("/");
+          // Here is the logic to send email
+        });
+      })
+      .catch((err) => console.log(err));
   });
 };
