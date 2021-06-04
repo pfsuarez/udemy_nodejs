@@ -1,6 +1,7 @@
 import express from "express";
 
 import * as shopController from "../controllers/shop.js";
+import isAuth from "../middleware/is-auth.js";
 
 const router = express.Router();
 
@@ -10,14 +11,14 @@ router.get("/products", shopController.getProducts);
 
 router.get("/products/:productId", shopController.getProduct);
 
-router.get("/cart", shopController.getCart);
+router.get("/cart", isAuth, shopController.getCart);
 
-router.post("/cart", shopController.postCart);
+router.post("/cart", isAuth, shopController.postCart);
 
-router.post("/cart-delete-item", shopController.postCartDeleteItem);
+router.post("/cart-delete-item", isAuth, shopController.postCartDeleteItem);
 
-router.get("/orders", shopController.getOrders);
+router.get("/orders", isAuth, shopController.getOrders);
 
-router.post("/create-order", shopController.postOrder);
+router.post("/create-order", isAuth, shopController.postOrder);
 
 export default router;

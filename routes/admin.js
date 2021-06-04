@@ -1,24 +1,25 @@
 import express from "express";
 
 import * as adminController from "../controllers/admin.js";
+import isAuth from "../middleware/is-auth.js";
 
 const router = express.Router();
 
 // /admin/add-product => GET
-router.get("/add-product", adminController.getAddProduct);
+router.get("/add-product", isAuth, adminController.getAddProduct);
 
 // /admin/add-product => POST
-router.post("/add-product", adminController.postAddProduct);
+router.post("/add-product", isAuth, adminController.postAddProduct);
 
 // /admin/product => GET
-router.get("/products", adminController.getProducts);
+router.get("/products", isAuth, adminController.getProducts);
 
 //Routers (get/post) to edit a product
-router.get("/edit-product/:productId", adminController.getEditProduct);
+router.get("/edit-product/:productId", isAuth, adminController.getEditProduct);
 
-router.post("/edit-product", adminController.postEditProduct);
+router.post("/edit-product", isAuth, adminController.postEditProduct);
 
 //Delete Product
-router.post("/delete-product", adminController.postDeleteProduct);
+router.post("/delete-product", isAuth, adminController.postDeleteProduct);
 
 export default router;
