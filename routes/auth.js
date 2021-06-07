@@ -15,6 +15,7 @@ router.post(
   [
     check("email", "Please enter a valid email.")
       .isEmail()
+      .normalizeEmail()
       .custom((value, { req }) => {
         return User.findOne({
           email: value,
@@ -26,7 +27,8 @@ router.post(
       }),
     check("password", "Password must be at least 5 characters long.")
       .isAlphanumeric()
-      .isLength({ min: 5 }),
+      .isLength({ min: 5 })
+      .trim(),
   ],
   authController.postLogin
 );
@@ -37,6 +39,7 @@ router.post(
     check("email")
       .isEmail()
       .withMessage("Please enter a valid email.")
+      .normalizeEmail()
       .custom((value, { req }) => {
         //Custom Validation
         // if (value === "pepe0@test.com") {
@@ -56,13 +59,16 @@ router.post(
       "Please enter a password with only numbers and text and at least 5 characters"
     )
       .isLength({ min: 5 })
-      .isAlphanumeric(),
-    body("confirmPassword").custom((value, { req }) => {
-      if (value !== req.body.password) {
-        throw new Error("Passwords have to match!");
-      }
-      return true;
-    }),
+      .isAlphanumeric()
+      .trim(),
+    body("confirmPassword")
+      .trim()
+      .custom((value, { req }) => {
+        if (value !== req.body.password) {
+          throw new Error("Passwords have to match!");
+        }
+        return true;
+      }),
   ],
   authController.postSignup
 );
