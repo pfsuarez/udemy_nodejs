@@ -35,6 +35,7 @@ export const getSignup = (req, res, next) => {
       password: "",
       confirmPassword: "",
     },
+    validationErrors: []
   });
 };
 
@@ -92,6 +93,7 @@ export const postSignup = (req, res, next) => {
         password,
         confirmPassword: req.body.confirmPassword,
       },
+      validationErrors: errors.array()
     });
   }
 
