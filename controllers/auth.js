@@ -15,6 +15,11 @@ export const getLogin = (req, res, next) => {
     path: "/login",
     pageTitle: "Login",
     errorMessage: message,
+    oldInput: {
+      email: "",
+      password: "",
+    },
+    validationErrors: [],
   });
 };
 
@@ -35,7 +40,7 @@ export const getSignup = (req, res, next) => {
       password: "",
       confirmPassword: "",
     },
-    validationErrors: []
+    validationErrors: [],
   });
 };
 
@@ -49,6 +54,11 @@ export const postLogin = (req, res, next) => {
       path: "/login",
       pageTitle: "Login",
       errorMessage: errors.array()[0].msg,
+      oldInput: {
+        email,
+        password,
+      },
+      validationErrors: errors.array(),
     });
   }
 
@@ -68,7 +78,17 @@ export const postLogin = (req, res, next) => {
           }
 
           req.flash("error", "Invalid email or password!");
-          res.redirect("/login");
+
+          return res.status(422).render("auth/login", {
+            path: "/login",
+            pageTitle: "Login",
+            errorMessage: "Invalid email or password!",
+            oldInput: {
+              email,
+              password,
+            },
+            validationErrors: [],
+          });
         })
         .catch((err) => {
           console.log("LOGIN", err);
@@ -93,7 +113,7 @@ export const postSignup = (req, res, next) => {
         password,
         confirmPassword: req.body.confirmPassword,
       },
-      validationErrors: errors.array()
+      validationErrors: errors.array(),
     });
   }
 
