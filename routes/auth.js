@@ -1,4 +1,6 @@
 import express from "express";
+import { check } from "express-validator/check/index.js";
+
 import * as authController from "../controllers/auth.js";
 
 const router = express.Router();
@@ -9,7 +11,11 @@ router.get("/signup", authController.getSignup);
 
 router.post("/login", authController.postLogin);
 
-router.post("/signup", authController.postSignup);
+router.post(
+  "/signup",
+  check("email").isEmail().withMessage("Please enter a valid email."),
+  authController.postSignup
+);
 
 router.post("/logout", authController.postLogout);
 

@@ -1,3 +1,4 @@
+import { validationResult } from "express-validator/check/index.js";
 import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { User } from "../models/user.js";
@@ -71,6 +72,15 @@ export const postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
   const confirmPassword = req.body.confirmPassword;
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).render("auth/signup", {
+      path: "/signup",
+      pageTitle: "Signup",
+      errorMessage: errors.array()[0].msg,
+    });
+  }
 
   User.findOne({ email })
     .then((userDoc) => {
