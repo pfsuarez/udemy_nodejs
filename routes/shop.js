@@ -1,4 +1,5 @@
 import express from "express";
+import { body } from "express-validator/check/index.js";
 
 import * as shopController from "../controllers/shop.js";
 import isAuth from "../middleware/is-auth.js";
