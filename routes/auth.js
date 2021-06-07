@@ -2,6 +2,7 @@ import express from "express";
 import { check, body } from "express-validator/check/index.js";
 
 import * as authController from "../controllers/auth.js";
+import { User } from "../models/user.js";
 
 const router = express.Router();
 
@@ -9,7 +10,26 @@ router.get("/login", authController.getLogin);
 
 router.get("/signup", authController.getSignup);
 
-router.post("/login", authController.postLogin);
+router.post(
+  "/login",
+  [
+    check("email", "Please enter a valid email.")
+      .isEmail()
+      .custom((value, { req }) => {
+        return User.findOne({
+          email: value,
+        }).then((user) => {
+          if (!user) {
+            return Promise.reject("Invalid email or password!");
+          }
+        });
+      }),
+    check("password", "Password must be at least 5 characters long.")
+      .isAlphanumeric()
+      .isLength({ min: 5 }),
+  ],
+  authController.postLogin
+);
 
 router.post(
   "/signup",
@@ -18,10 +38,18 @@ router.post(
       .isEmail()
       .withMessage("Please enter a valid email.")
       .custom((value, { req }) => {
-        if (value === "pepe0@test.com") {
-          throw new Error("This email address is forbidden.");
-        }
-        return true;
+        //Custom Validation
+        // if (value === "pepe0@test.com") {
+        //   throw new Error("This email address is forbidden.");
+        // }
+        //return true;
+
+        //Async Validation
+        return User.findOne({ email: value }).then((userDoc) => {
+          if (userDoc) {
+            return Promise.reject("Email currently in use!");
+          }
+        });
       }),
     body(
       "password",
