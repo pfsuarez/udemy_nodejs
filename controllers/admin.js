@@ -126,7 +126,11 @@ export const getEditProduct = (req, res, next) => {
         hasError: false,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const getProducts = (req, res, next) => {
@@ -140,7 +144,11 @@ export const getProducts = (req, res, next) => {
         pageTitle: "Admin Products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const postDeleteProduct = (req, res, next) => {
@@ -148,5 +156,9 @@ export const postDeleteProduct = (req, res, next) => {
 
   Product.deleteOne({ _id: productId, userId: req.user._id })
     .then(() => res.redirect("/admin/products"))
-    .catch((err) => res.redirect("/500"));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };

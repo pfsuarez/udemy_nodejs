@@ -95,7 +95,11 @@ export const postLogin = (req, res, next) => {
           res.redirect("/login");
         });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const postSignup = (req, res, next) => {
@@ -133,7 +137,11 @@ export const postSignup = (req, res, next) => {
     .then(() => {
       res.redirect("/login");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const postLogout = (req, res, next) => {
@@ -182,7 +190,11 @@ export const postReset = (req, res, next) => {
           // Here is the logic to send email
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error);
+      });
   });
 };
 
@@ -213,7 +225,11 @@ export const getNewPassword = (req, res, next) => {
         passwordToken: token,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const postNewPassword = (req, res, next) => {
@@ -241,5 +257,9 @@ export const postNewPassword = (req, res, next) => {
     .then(() => {
       res.redirect("/login");
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };

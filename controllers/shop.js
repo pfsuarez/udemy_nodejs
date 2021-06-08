@@ -10,7 +10,11 @@ export const getProducts = (req, res, next) => {
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const getProduct = (req, res, next) => {
@@ -34,7 +38,11 @@ export const getIndex = (req, res, next) => {
         pageTitle: "Shop",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const getCart = (req, res, next) => {
@@ -58,7 +66,11 @@ export const postCart = (req, res, next) => {
   Product.findById(prodId)
     .then((product) => req.user.addToCart(product))
     .then(() => res.redirect("/cart"))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const postCartDeleteItem = (req, res, next) => {
@@ -67,7 +79,11 @@ export const postCartDeleteItem = (req, res, next) => {
   req.user
     .removeFromCart(productId)
     .then(() => res.redirect("/cart"))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const getOrders = (req, res, next) => {
@@ -80,7 +96,11 @@ export const getOrders = (req, res, next) => {
         orders,
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const postOrder = (req, res, next) => {
@@ -107,5 +127,9 @@ export const postOrder = (req, res, next) => {
     })
     .then(() => req.user.clearCart())
     .then(() => res.redirect("/orders"))
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
