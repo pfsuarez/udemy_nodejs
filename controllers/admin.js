@@ -51,21 +51,9 @@ export const postAddProduct = (req, res, next) => {
     .save()
     .then(() => res.redirect("/"))
     .catch((err) => {
-      // return res.status(500).render("admin/edit-product", {
-      //   pageTitle: "Add a Product",
-      //   path: "/admin/add-product",
-      //   editing: false,
-      //   errorMessage: "Database operation failed, please try again.",
-      //   validationErrors: [],
-      //   hasError: true,
-      //   product: {
-      //     title,
-      //     imageUrl,
-      //     price,
-      //     description,
-      //   },
-      // });
-      res.redirect("/500");
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
     });
 };
 
@@ -107,7 +95,11 @@ export const postEditProduct = (req, res, next) => {
       product.price = price;
       return product.save().then(() => res.redirect("/admin/products"));
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error);
+    });
 };
 
 export const getEditProduct = (req, res, next) => {
@@ -156,5 +148,5 @@ export const postDeleteProduct = (req, res, next) => {
 
   Product.deleteOne({ _id: productId, userId: req.user._id })
     .then(() => res.redirect("/admin/products"))
-    .catch((err) => console.log(err));
+    .catch((err) => res.redirect("/500"));
 };
