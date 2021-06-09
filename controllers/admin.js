@@ -1,5 +1,6 @@
 import { validationResult } from "express-validator/check/index.js";
 
+import { deleteFile } from "../helper/helper.js";
 import { Product } from "../models/product.js";
 
 export const getAddProduct = (req, res, next) => {
@@ -24,7 +25,7 @@ export const postAddProduct = (req, res, next) => {
   const userId = req.user._id;
   const errors = validationResult(req);
 
-  if(!image){
+  if (!image) {
     return res.status(422).render("admin/edit-product", {
       pageTitle: "Add a Product",
       path: "/admin/add-product",
@@ -56,7 +57,7 @@ export const postAddProduct = (req, res, next) => {
     });
   }
 
-  const imageUrl = `/${image.path}`;
+  const imageUrl = image.path;
 
   const product = new Product({
     title,
@@ -112,8 +113,9 @@ export const postEditProduct = (req, res, next) => {
 
       product.title = title;
 
-      if(image) {
-        product.imageUrl = `/${image.path}`;
+      if (image) {
+        deleteFile(product.imageUrl);
+        product.imageUrl = image.path;
       }
 
       product.description = description;
@@ -178,12 +180,15 @@ export const getProducts = (req, res, next) => {
 
 export const postDeleteProduct = (req, res, next) => {
   const productId = req.body.productId;
+  Product.findById(productId)
+    .then((product) => {
+      if (!product) {
+        return next(new Error("Product not found"));
+      }
 
-  Product.deleteOne({ _id: productId, userId: req.user._id })
+      deleteFile(product.imageUrl);
+      return Product.deleteOne({ _id: productId, userId: req.user._id });
+    })
     .then(() => res.redirect("/admin/products"))
-    .catch((err) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
-    });
+    .catch((err) => next(err));
 };
