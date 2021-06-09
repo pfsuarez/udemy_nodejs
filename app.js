@@ -32,7 +32,19 @@ const fileStorage = multer.diskStorage({
   },
 });
 
-const csrfProtection = csrf({});
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+const csrfProtection = csrf();
 
 const app = express();
 
@@ -40,7 +52,7 @@ app.set("view engine", "ejs");
 app.set("views", "views"); // <- not necessary, by default templates must be in views folder
 
 app.use(bodyParser.urlencoded());
-app.use(multer({ storage: fileStorage }).single("image"));
+app.use(multer({ storage: fileStorage, fileFilter }).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 
 const mongoDbStore = connectMongodbSession(session);
@@ -93,6 +105,7 @@ app.get("/500", errors.get500Page);
 app.use(errors.get404Page);
 
 app.use((error, req, res, next) => {
+  console.log("ERROR", error);
   return res.redirect("/500");
 });
 

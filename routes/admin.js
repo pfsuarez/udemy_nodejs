@@ -14,9 +14,8 @@ router.post(
   "/add-product",
   [
     check("title").trim().isString().isLength({ min: 3 }),
-    //check("imageUrl").trim().isURL(),
     check("price").isCurrency(),
-    check("description").trim().isLength({ min: 10 }),
+    check("description").trim().isLength({ min: 5 }),
   ],
   isAuth,
   adminController.postAddProduct
@@ -32,9 +31,8 @@ router.post(
   "/edit-product",
   [
     check("title").trim().isString().isLength({ min: 3 }),
-    check("imageUrl").isURL(),
     check("price").isCurrency(),
-    check("description").trim().isLength({ min: 10 }),
+    check("description").trim().isLength({ min: 5 }),
   ],
   isAuth,
   adminController.postEditProduct

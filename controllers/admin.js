@@ -14,12 +14,14 @@ export const getAddProduct = (req, res, next) => {
 };
 
 export const postAddProduct = (req, res, next) => {
+  console.log("--------------------------------------------");
+  console.log(req.file);
+
   const title = req.body.title.trim();
-  const imageUrl = req.file;
+  const imageUrl = "";
   const description = req.body.description.trim();
   const price = req.body.price;
   const userId = req.user._id;
-
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
@@ -58,9 +60,12 @@ export const postAddProduct = (req, res, next) => {
 };
 
 export const postEditProduct = (req, res, next) => {
+  console.log("--------------------------------------------");
+  console.log(req.file);
+
   const id = req.body.productId;
   const title = req.body.title.trim();
-  const imageUrl = req.body.imageUrl.trim();
+  const imageUrl = req.body.image;
   const description = req.body.description.trim();
   const price = req.body.price;
   const errors = validationResult(req);
