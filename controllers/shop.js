@@ -1,3 +1,6 @@
+import fs from "fs";
+import path from "path";
+
 import { Product } from "../models/product.js";
 import { Order } from "../models/order.js";
 
@@ -89,7 +92,6 @@ export const postCartDeleteItem = (req, res, next) => {
 export const getOrders = (req, res, next) => {
   Order.find({ "user.userId": req.user._id })
     .then((orders) => {
-      console.log("orders", orders);
       res.render("shop/orders", {
         path: "orders",
         pageTitle: "Your Orders",
@@ -132,4 +134,19 @@ export const postOrder = (req, res, next) => {
       error.httpStatusCode = 500;
       return next(error);
     });
+};
+
+export const getInvoice = (req, res, next) => {
+  const orderId = req.params.orderId;
+  const invoiceName = `invoice-${orderId}.pdf`;
+  const invoicePath = path.join("data", "invoices", invoiceName);
+
+  fs.readFile(invoicePath, (err, data) => {
+    if (err) {
+      return next(err);
+    }
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${invoiceName}"`);
+    res.send(data);
+  });
 };
