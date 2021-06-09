@@ -1,6 +1,8 @@
 import fs from "fs";
 import path from "path";
 
+import PDFDocument from "pdfkit";
+
 import { Product } from "../models/product.js";
 import { Order } from "../models/order.js";
 
@@ -151,6 +153,19 @@ export const getInvoice = (req, res, next) => {
         return next(new Error("Unauthorized."));
       }
 
+      const pdfDoc = new PDFDocument();
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename="${invoiceName}"`
+      );
+      pdfDoc.pipe(fs.createWriteStream(invoicePath));
+      pdfDoc.pipe(res);
+
+      pdfDoc.text("Hello world!");
+
+      pdfDoc.end();
+
       //Used for small files
       // fs.readFile(invoicePath, (err, data) => {
       //   if (err) {
@@ -165,13 +180,13 @@ export const getInvoice = (req, res, next) => {
       // });
 
       //Streaming file
-      const file = fs.createReadStream(invoicePath);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename="${invoiceName}"`
-      );
-      file.pipe(res);
+      // const file = fs.createReadStream(invoicePath);
+      // res.setHeader("Content-Type", "application/pdf");
+      // res.setHeader(
+      //   "Content-Disposition",
+      //   `attachment; filename="${invoiceName}"`
+      // );
+      // file.pipe(res);
     })
     .catch((err) => next(err));
 };
