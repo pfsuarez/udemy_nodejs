@@ -31,7 +31,7 @@ router.post(
   "/edit-product",
   [
     check("title").trim().isString().isLength({ min: 3 }),
-    check("price").isCurrency(),
+    check("price").isFloat(),
     check("description").trim().isLength({ min: 5 }),
   ],
   isAuth,
