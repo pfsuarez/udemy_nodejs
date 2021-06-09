@@ -15,7 +15,7 @@ export const getAddProduct = (req, res, next) => {
 
 export const postAddProduct = (req, res, next) => {
   const title = req.body.title.trim();
-  const imageUrl = req.body.imageUrl.trim();
+  const imageUrl = req.file;
   const description = req.body.description.trim();
   const price = req.body.price;
   const userId = req.user._id;

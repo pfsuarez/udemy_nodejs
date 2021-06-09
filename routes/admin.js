@@ -14,7 +14,7 @@ router.post(
   "/add-product",
   [
     check("title").trim().isString().isLength({ min: 3 }),
-    check("imageUrl").trim().isURL(),
+    //check("imageUrl").trim().isURL(),
     check("price").isCurrency(),
     check("description").trim().isLength({ min: 10 }),
   ],

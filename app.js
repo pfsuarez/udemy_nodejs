@@ -8,6 +8,7 @@ import connectMongodbSession from "connect-mongodb-session";
 
 import csrf from "csurf";
 import flash from "connect-flash";
+import multer from "multer";
 
 import { __dirname } from "./helper/helper.js";
 
@@ -22,6 +23,15 @@ import { User } from "./models/user.js";
 const password = "";
 const MONGODB_URI = `mongodb+srv://picateclas:${password}@cluster0.rsjvy.mongodb.net/shop?retryWrites=true&w=majority`;
 
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, `${new Date().toISOString()}-${file.originalname}`);
+  },
+});
+
 const csrfProtection = csrf({});
 
 const app = express();
@@ -30,6 +40,7 @@ app.set("view engine", "ejs");
 app.set("views", "views"); // <- not necessary, by default templates must be in views folder
 
 app.use(bodyParser.urlencoded());
+app.use(multer({ storage: fileStorage }).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 
 const mongoDbStore = connectMongodbSession(session);

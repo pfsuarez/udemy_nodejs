@@ -12,9 +12,9 @@
         <% } %>
 
         <% if(editing) { %>
-          <form class="product-form" action="/admin/edit-product" method="POST">
+          <form class="product-form" action="/admin/edit-product" method="POST" enctype="multipart/form-data">
         <% } else { %>
-          <form class="product-form" action="/admin/add-product" method="POST">
+          <form class="product-form" action="/admin/add-product" method="POST" enctype="multipart/form-data">
         <% } %>
             <div class="form-control">
               <label for="title">Title</label>
