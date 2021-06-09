@@ -56,7 +56,7 @@ export const postAddProduct = (req, res, next) => {
     });
   }
 
-  const imageUrl = image.path;
+  const imageUrl = `/${image.path}`;
 
   const product = new Product({
     title,
@@ -113,9 +113,9 @@ export const postEditProduct = (req, res, next) => {
       product.title = title;
 
       if(image) {
-        product.imageUrl = image.path;
+        product.imageUrl = `/${image.path}`;
       }
-      
+
       product.description = description;
       product.price = price;
       return product.save().then(() => res.redirect("/admin/products"));
