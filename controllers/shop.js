@@ -2,6 +2,7 @@ import fs from "fs";
 import path from "path";
 
 import PDFDocument from "pdfkit";
+import Stripe from "stripe";
 
 import { Product } from "../models/product.js";
 import { Order } from "../models/order.js";
@@ -237,22 +238,72 @@ export const getInvoice = (req, res, next) => {
 };
 
 export const getCheckout = (req, res, next) => {
+  let products;
+  let total = 0;
+  const stripe = new Stripe("USE YOUR KEY");
+
   req.user
     .populate("cart.items.productId")
     .execPopulate()
     .then((user) => {
-      const products = user.cart.items;
-      console.log("PRODUCTS", products);
-      let totalSum = 0;
+      products = user.cart.items;
+      total = 0;
       products.forEach((p) => {
-        totalSum += p.qty * p.productId.price
+        total += p.qty * p.productId.price
+      });
+      
+      console.log("PRODUCTS", products);
+
+      return stripe.checkout.sessions.create({
+        payment_method_types: ["card"],
+        line_items: products.map(p => {
+          return {
+            name: p.productId.title,
+            description: p.productId.description,
+            amount: p.productId.price * 100,
+            currency: "usd",
+            quantity: p.qty
+          }
+        }),
+        success_url: `${req.protocol}://${req.get("host")}/checkout/success`,
+        cancel_url: `${req.protocol}://${req.get("host")}/checkout/cancel`,
+      }).then(session => {
+        res.render("shop/checkout", {
+          path: "/checkout",
+          pageTitle: "Checkout",
+          products: products,
+          total,
+          sessionId: session.id
+        });
+      });
+    });
+};
+
+export const getCheckoutSuccess = (req, res, next) => {
+  req.user
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+      const products = user.cart.items.map((i) => {
+        return {
+          qty: i.qty,
+          product: { ...i.productId._doc },
+        };
       });
 
-      res.render("shop/checkout", {
-        path: "/checkout",
-        pageTitle: "Checkout",
-        products: products,
-        totalSum
+      const order = new Order({
+        user: {
+          email: req.user.email,
+          userId: req.user,
+        },
+        products,
       });
+
+      return order.save();
+    })
+    .then(() => req.user.clearCart())
+    .then(() => res.redirect("/orders"))
+    .catch((err) => {
+      return next(err);
     });
 };
