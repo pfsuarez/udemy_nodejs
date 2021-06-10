@@ -6,7 +6,7 @@ import PDFDocument from "pdfkit";
 import { Product } from "../models/product.js";
 import { Order } from "../models/order.js";
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 2;
 
 export const getProducts = (req, res, next) => {
   const page = +req.query.page || 1;
