@@ -9,18 +9,33 @@ import { Order } from "../models/order.js";
 const ITEMS_PER_PAGE = 1;
 
 export const getProducts = (req, res, next) => {
+  const page = +req.query.page || 1;
+  let totalProducts;
+
   Product.find()
+    .countDocuments()
+    .then((numProducts) => {
+      totalProducts = numProducts;
+
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "All Products",
         path: "/products",
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalProducts,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalProducts / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
-      const error = new Error(err);
-      error.httpStatusCode = 500;
-      return next(error);
+      return next(err);
     });
 };
 
