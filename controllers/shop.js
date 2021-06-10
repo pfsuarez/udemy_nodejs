@@ -235,3 +235,24 @@ export const getInvoice = (req, res, next) => {
     })
     .catch((err) => next(err));
 };
+
+export const getCheckout = (req, res, next) => {
+  req.user
+    .populate("cart.items.productId")
+    .execPopulate()
+    .then((user) => {
+      const products = user.cart.items;
+      console.log("PRODUCTS", products);
+      let totalSum = 0;
+      products.forEach((p) => {
+        totalSum += p.qty * p.productId.price
+      });
+
+      res.render("shop/checkout", {
+        path: "/checkout",
+        pageTitle: "Checkout",
+        products: products,
+        totalSum
+      });
+    });
+};
