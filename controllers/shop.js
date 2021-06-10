@@ -6,7 +6,7 @@ import PDFDocument from "pdfkit";
 import { Product } from "../models/product.js";
 import { Order } from "../models/order.js";
 
-const ITEMS_PER_PAGE = 2;
+const ITEMS_PER_PAGE = 1;
 
 export const getProducts = (req, res, next) => {
   Product.find()
@@ -37,16 +37,28 @@ export const getProduct = (req, res, next) => {
 };
 
 export const getIndex = (req, res, next) => {
-  const page = req.query.page;
+  const page = +req.query.page || 1;
+  let totalProducts;
 
   Product.find()
-    .skip((page - 1) * ITEMS_PER_PAGE)
-    .limit(ITEMS_PER_PAGE)
+    .countDocuments()
+    .then((numProducts) => {
+      totalProducts = numProducts;
+      return Product.find()
+        .skip((page - 1) * ITEMS_PER_PAGE)
+        .limit(ITEMS_PER_PAGE);
+    })
     .then((products) => {
       res.render("shop/index", {
         prods: products,
         path: "/",
         pageTitle: "Shop",
+        currentPage: page,
+        hasNextPage: ITEMS_PER_PAGE * page < totalProducts,
+        hasPreviousPage: page > 1,
+        nextPage: page + 1,
+        previousPage: page - 1,
+        lastPage: Math.ceil(totalProducts / ITEMS_PER_PAGE),
       });
     })
     .catch((err) => {
