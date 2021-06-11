@@ -2,8 +2,14 @@ export const getPost = (req, res, next) => {
   return res.status(200).json({
     posts: [
       {
+        _id: "12345",
         title: "First Post",
         content: "This is the first post!",
+        imageUrl: "images/107-rafita.jpg",
+        creator: {
+          name: "QWERTY",
+        },
+        createdAt: new Date()
       },
     ],
   });
