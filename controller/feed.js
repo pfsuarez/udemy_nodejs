@@ -1,3 +1,5 @@
+import { validationResult } from "express-validator/check/index.js";
+
 export const getPost = (req, res, next) => {
   return res.status(200).json({
     posts: [
@@ -9,13 +11,22 @@ export const getPost = (req, res, next) => {
         creator: {
           name: "QWERTY",
         },
-        createdAt: new Date()
+        createdAt: new Date(),
       },
     ],
   });
 };
 
 export const createPost = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return res.status(422).json({
+      message: "Validation failed. Entered data is incorrect.",
+      errors: errors.array(),
+    });
+  }
+
   const title = req.body.title;
   const content = req.body.content;
 
@@ -27,9 +38,9 @@ export const createPost = (req, res, next) => {
       title,
       content,
       creator: {
-        name: "QWERTY"
+        name: "QWERTY",
       },
-      createdAt: new Date()
+      createdAt: new Date(),
     },
   });
 };
