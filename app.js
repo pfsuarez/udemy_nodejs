@@ -1,5 +1,8 @@
 import express from "express";
 import bodyParser from "body-parser";
+import mongoose from "mongoose";
+
+import * as configuration from "./helper/configuration.js";
 
 import feedRoutes from "./routes/feed.js";
 
@@ -17,4 +20,11 @@ app.use((req, res, next) => {
 
 app.use("/feed", feedRoutes);
 
-app.listen(8080);
+mongoose
+  .connect(configuration.MONGODB_URI)
+  .then(() => {
+    console.log("MongoDb Connected");
+    app.listen(8080);
+  })
+  .catch((err) => console.log("MongoDb Error", err));
+

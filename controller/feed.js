@@ -1,4 +1,4 @@
-import { validationResult } from "express-validator/check/index.js";
+import { validationResult } from "express-validator";
 
 export const getPost = (req, res, next) => {
   return res.status(200).json({

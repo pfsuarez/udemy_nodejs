@@ -1,5 +1,5 @@
 import express from "express";
-import { body } from "express-validator/check/index.js";
+import { body } from "express-validator";
 import * as feedController from "../controller/feed.js";
 
 const router = express.Router();
