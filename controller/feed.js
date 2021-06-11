@@ -20,13 +20,18 @@ export const createPost = (req, res, next) => {
     throw getCustomError("Validation failed. Entered data is incorrect.", 422, null);
   }
 
+  if(!req.file) {
+    throw getCustomError("No image provided.", 422, null);
+  }
+
   const title = req.body.title;
   const content = req.body.content;
+  const imageUrl = req.file.path;
 
   const post = new Post({
     title,
     content,
-    imageUrl: "images/107-rafita.jpg",
+    imageUrl,
     creator: {
       name: "QWERTY",
     },
