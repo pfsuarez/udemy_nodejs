@@ -1,8 +1,10 @@
+import path from "path";
 import express from "express";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 
 import * as configuration from "./helper/configuration.js";
+import { __dirname } from "./helper/path.js";
 
 import feedRoutes from "./routes/feed.js";
 
@@ -10,6 +12,7 @@ const app = express();
 
 //app.use(bodyParser.urlencoded()); //x-www-urlencoded <form>
 app.use(bodyParser.json()); // application/json
+app.use("/images", express.static(path.join(__dirname, "images")));
 
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // domain.com
@@ -20,6 +23,15 @@ app.use((req, res, next) => {
 
 app.use("/feed", feedRoutes);
 
+app.use((error, req, res, next) => {
+  const statusCode = error.statusCode || 500;
+  const message = error.message;
+
+  res.status(statusCode).json({
+    message,
+  });
+});
+
 mongoose
   .connect(configuration.MONGODB_URI)
   .then(() => {
@@ -27,4 +39,3 @@ mongoose
     app.listen(8080);
   })
   .catch((err) => console.log("MongoDb Error", err));
-
