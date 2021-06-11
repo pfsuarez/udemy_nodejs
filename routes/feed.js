@@ -5,7 +5,7 @@ import * as feedController from "../controller/feed.js";
 const router = express.Router();
 
 // GET /feed/posts
-router.get("/posts", feedController.getPost);
+router.get("/posts", feedController.getPosts);
 
 router.post(
   "/post",
@@ -15,5 +15,7 @@ router.post(
   ],
   feedController.createPost
 );
+
+router.get("/post/:postId", feedController.getPost);
 
 export default router;
