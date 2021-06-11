@@ -74,6 +74,26 @@ export const getPost = (req, res, next) => {
     });
 };
 
+export const deletePost = (req, res, next) => {
+  const postId = req.params.postId;
+
+  Post.findById(postId)
+    .then((post) => {
+      if (!post) {
+        throw getCustomError("Post could not found.", 404, null);
+      }
+
+      clearImage(post.imageUrl);
+      return Post.findByIdAndRemove(postId);
+    })
+    .then(() => {
+      res.status(200).json({ message: "Image deleted" });
+    })
+    .catch((err) => {
+      next(getCustomError(null, null, err));
+    });
+};
+
 export const updatePost = (req, res, next) => {
   const errors = validationResult(req);
 
