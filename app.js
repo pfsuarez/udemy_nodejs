@@ -9,6 +9,7 @@ import * as configuration from "./helper/configuration.js";
 import { __dirname } from "./helper/path.js";
 
 import feedRoutes from "./routes/feed.js";
+import authRoutes from "./routes/auth.js";
 
 const app = express();
 
@@ -51,6 +52,7 @@ app.use((req, res, next) => {
 });
 
 app.use("/feed", feedRoutes);
+app.use("/auth", authRoutes);
 
 app.use((error, req, res, next) => {
   const statusCode = error.statusCode || 500;
