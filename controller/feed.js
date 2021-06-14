@@ -8,9 +8,20 @@ import { __dirname } from "../helper/path.js";
 import Post from "../models/post.js";
 
 export const getPosts = (req, res, next) => {
+  const currentPage = req.query.page || 1;
+  const perPage = 2;
+  let totalItems;
+
   Post.find()
+    .countDocuments()
+    .then((count) => {
+      totalItems = count;
+      return Post.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage);
+    })
     .then((posts) => {
-      return res.status(200).json({ posts });
+      return res.status(200).json({ posts, totalItems });
     })
     .catch((err) => {
       next(getCustomError(null, null, err));
