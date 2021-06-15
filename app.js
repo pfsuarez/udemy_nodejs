@@ -4,6 +4,7 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import multer from "multer";
 import { v4 as uuidV4 } from "uuid";
+import { Socket, Server } from "socket.io";
 
 import * as configuration from "./helper/configuration.js";
 import { __dirname } from "./helper/path.js";
@@ -61,7 +62,7 @@ app.use((error, req, res, next) => {
 
   res.status(statusCode).json({
     message,
-    data
+    data,
   });
 });
 
@@ -69,6 +70,17 @@ mongoose
   .connect(configuration.MONGODB_URI)
   .then(() => {
     console.log("MongoDb Connected");
-    app.listen(8080);
+
+    const server = app.listen(8080);
+    const io = new Server(server, {
+      cors: {
+        origin: "http://localhost:3000", // * 
+        methods: ["GET", "POST"],
+      },
+    });
+
+    io.on("connection", (socket) => {
+      console.log("CLIENT CONNECTED");
+    });
   })
   .catch((err) => console.log("MongoDb Error", err));
