@@ -69,7 +69,7 @@ export const login = (req, res, next) => {
       const token = jwt.sign(
         {
           email: userDb.email,
-          id: userDb._id.toString(),
+          userId: userDb._id.toString(),
         },
         jwtSecret,
         {

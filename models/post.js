@@ -1,6 +1,8 @@
 import mongoose from "mongoose";
 
-const postSchema = new mongoose.Schema({
+const Schema = mongoose.Schema;
+
+const postSchema = new Schema({
   title: {
     type: String,
     required: true
@@ -14,7 +16,8 @@ const postSchema = new mongoose.Schema({
     required: true
   },
   creator: {
-    type: Object,
+    type: Schema.Types.ObjectId,
+    ref: "User",
     required: true
   }
 }, {

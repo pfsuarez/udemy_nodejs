@@ -6,6 +6,7 @@ import { getCustomError } from "../helper/error.js";
 import { __dirname } from "../helper/path.js";
 
 import Post from "../models/post.js";
+import User from "../models/user.js";
 
 export const getPosts = (req, res, next) => {
   const currentPage = req.query.page || 1;
@@ -46,22 +47,38 @@ export const createPost = (req, res, next) => {
   const title = req.body.title;
   const content = req.body.content;
   const imageUrl = req.file.path;
+  const userId = req.userId;
+  let creator;
 
   const post = new Post({
     title,
     content,
     imageUrl,
-    creator: {
-      name: "QWERTY",
-    },
+    creator: userId,
   });
+
+
+  //console.log("USERID", req);
+  console.log("POST", post);
 
   post
     .save()
     .then((postResult) => {
+      return User.findById(userId);
+    })
+    .then((userdb) => {
+      creator = userdb;
+      userdb.posts.push(post);
+      return userdb.save();
+    })
+    .then((result) => {
       res.status(201).json({
         message: "Post created succesfully",
-        post: postResult,
+        post: post,
+        creator : {
+          id: creator._id.toString(),
+          name: creator.name
+        }
       });
     })
     .catch((err) => {
