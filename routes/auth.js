@@ -26,4 +26,13 @@ router.put(
   authController.signUp
 );
 
+router.post(
+  "/login",
+  [
+    body("email").isEmail().normalizeEmail(),
+    body("password").trim().isLength({ min: 5 }),
+  ],
+  authController.login
+);
+
 export default router;
