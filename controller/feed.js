@@ -64,7 +64,7 @@ export const createPost = async (req, res, next) => {
 
     getIO().emit("posts", {
       action: "create",
-      post
+      post: { ...post._doc, creator: { _id: userId, name: userDb.name } },
     });
 
     res.status(201).json({
