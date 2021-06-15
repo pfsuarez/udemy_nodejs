@@ -12,6 +12,8 @@ import { __dirname } from "./helper/path.js";
 import feedRoutes from "./routes/feed.js";
 import authRoutes from "./routes/auth.js";
 
+import { setIO, getIO } from "./socket.js";
+
 const app = express();
 
 const fileStorage = multer.diskStorage({
@@ -72,14 +74,9 @@ mongoose
     console.log("MongoDb Connected");
 
     const server = app.listen(8080);
-    const io = new Server(server, {
-      cors: {
-        origin: "http://localhost:3000", // * 
-        methods: ["GET", "POST"],
-      },
-    });
+    setIO(server);
 
-    io.on("connection", (socket) => {
+    getIO().on("connection", (socket) => {
       console.log("CLIENT CONNECTED");
     });
   })
