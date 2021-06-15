@@ -57,10 +57,6 @@ export const createPost = (req, res, next) => {
     creator: userId,
   });
 
-
-  //console.log("USERID", req);
-  console.log("POST", post);
-
   post
     .save()
     .then((postResult) => {
@@ -104,11 +100,16 @@ export const getPost = (req, res, next) => {
 
 export const deletePost = (req, res, next) => {
   const postId = req.params.postId;
+  const userId = req.userId;
 
   Post.findById(postId)
     .then((post) => {
       if (!post) {
         throw getCustomError("Post could not found.", 404, null);
+      }
+
+      if(post.creator.toString() !== userId.toString()){
+        throw getCustomError("Not Authorized", 403, null);
       }
 
       clearImage(post.imageUrl);
@@ -136,6 +137,7 @@ export const updatePost = (req, res, next) => {
   const postId = req.params.postId;
   const title = req.body.title;
   const content = req.body.content;
+  const userId = req.userId;
   let imageUrl = req.body.image;
 
   if (req.file) {
@@ -150,6 +152,10 @@ export const updatePost = (req, res, next) => {
     .then((post) => {
       if (!post) {
         throw getCustomError("Post Not Found", 404, null);
+      }
+
+      if(post.creator.toString() !== userId.toString()){
+        throw getCustomError("Not Authorized", 403, null);
       }
 
       if (imageUrl !== post.imageUrl) {
