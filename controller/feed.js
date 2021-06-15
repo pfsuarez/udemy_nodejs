@@ -71,10 +71,10 @@ export const createPost = (req, res, next) => {
       res.status(201).json({
         message: "Post created succesfully",
         post: post,
-        creator : {
+        creator: {
           id: creator._id.toString(),
-          name: creator.name
-        }
+          name: creator.name,
+        },
       });
     })
     .catch((err) => {
@@ -108,12 +108,19 @@ export const deletePost = (req, res, next) => {
         throw getCustomError("Post could not found.", 404, null);
       }
 
-      if(post.creator.toString() !== userId.toString()){
+      if (post.creator.toString() !== userId.toString()) {
         throw getCustomError("Not Authorized", 403, null);
       }
 
       clearImage(post.imageUrl);
       return Post.findByIdAndRemove(postId);
+    })
+    .then(() => {
+      return User.findById(userId);
+    })
+    .then((userdb) => {
+      userdb.posts.pull(postId);
+      return userdb.save();
     })
     .then(() => {
       res.status(200).json({ message: "Image deleted" });
@@ -154,7 +161,7 @@ export const updatePost = (req, res, next) => {
         throw getCustomError("Post Not Found", 404, null);
       }
 
-      if(post.creator.toString() !== userId.toString()){
+      if (post.creator.toString() !== userId.toString()) {
         throw getCustomError("Not Authorized", 403, null);
       }
 
