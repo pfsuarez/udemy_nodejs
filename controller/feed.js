@@ -183,6 +183,51 @@ export const updatePost = (req, res, next) => {
     });
 };
 
+export const getStatus = (req, res, next) => {
+  const userId = req.userId;
+
+  User.findById(userId)
+    .then((userDb) => {
+      if (!userDb) {
+        throw getCustomError("User not found", 404, null);
+      }
+      res.status(200).json({ status: userDb.status });
+    })
+    .catch((err) => {
+      next(getCustomError(null, null, err));
+    });
+};
+
+export const updateStatus = (req, res, next) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    throw getCustomError(
+      "Validation failed. Entered data is incorrect.",
+      422,
+      null
+    );
+  }
+  const userId = req.userId;
+  const status = req.body.status;
+
+  User.findById(userId)
+    .then((userDb) => {
+      if (!userDb) {
+        throw getCustomError("User not found", 404, null);
+      }
+
+      userDb.status = status;
+      return userDb.save();
+    })
+    .then(() => {
+      res.status(201).json({ message: "Status updated" });
+    })
+    .catch((err) => {
+      next(getCustomError(null, null, err));
+    });
+};
+
 const clearImage = (filePath) => {
   filePath = path.join(__dirname, filePath);
   fs.unlink(filePath, (err) => console.log("ERROR DELETING FILE", err));
