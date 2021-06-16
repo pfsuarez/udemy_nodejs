@@ -9,6 +9,7 @@ import connectMongodbSession from "connect-mongodb-session";
 import csrf from "csurf";
 import flash from "connect-flash";
 import multer from "multer";
+import helmet from "helmet";
 
 import { __dirname } from "./helper/helper.js";
 
@@ -56,6 +57,7 @@ app.use(bodyParser.urlencoded());
 app.use(multer({ storage: fileStorage, fileFilter }).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
+app.use(helmet());
 
 const mongoDbStore = connectMongodbSession(session);
 const store = new mongoDbStore({
