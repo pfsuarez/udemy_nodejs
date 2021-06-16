@@ -240,7 +240,7 @@ export const getInvoice = (req, res, next) => {
 export const getCheckout = (req, res, next) => {
   let products;
   let total = 0;
-  const stripe = new Stripe("USE YOUR KEY");
+  const stripe = new Stripe(process.env.STRIPE_KEY);
 
   req.user
     .populate("cart.items.productId")

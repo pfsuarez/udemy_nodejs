@@ -20,8 +20,9 @@ import * as errors from "./controllers/error.js";
 
 import { User } from "./models/user.js";
 
-const password = "";
-const MONGODB_URI = `mongodb+srv://picateclas:${password}@cluster0.rsjvy.mongodb.net/shop?retryWrites=true&w=majority`;
+console.log("ENVIRONMENT", process.env.NODE_ENV);
+
+const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.rsjvy.mongodb.net/${process.env.MONGO_DEFAULT_DB}?retryWrites=true&w=majority`;
 
 const fileStorage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -113,6 +114,6 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGODB_URI)
   .then((result) => {
-    app.listen(3000);
+    app.listen(process.env.PORT || 3000);
   })
   .catch((err) => console.log(err));

@@ -1,0 +1,9 @@
+{
+  "env": {
+    "NODE_ENV": "development",
+    "MONGO_USER": "USE_YOUR_USER",
+    "MONGO_PASSWORD": "USE_YOUR_PASSWORD",
+    "MONGO_DEFAULT_DB": "USE_YOUR_DB",
+    "STRIPE_KEY": "USE_YOUR_KEY"
+  }
+}
