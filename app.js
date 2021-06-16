@@ -2,6 +2,7 @@ import express from "express";
 import session from "express-session";
 import bodyParser from "body-parser";
 import path from "path";
+import fs from "fs";
 
 import mongoose from "mongoose";
 import connectMongodbSession from "connect-mongodb-session";
@@ -11,6 +12,7 @@ import flash from "connect-flash";
 import multer from "multer";
 import helmet from "helmet";
 import compression from "compression";
+import morgan from "morgan";
 
 import { __dirname } from "./helper/helper.js";
 
@@ -31,7 +33,10 @@ const fileStorage = multer.diskStorage({
     cb(null, "images");
   },
   filename: (req, file, cb) => {
-    cb(null, `${new Date().getUTCMilliseconds().toString()}-${file.originalname}`);
+    cb(
+      null,
+      `${new Date().getUTCMilliseconds().toString()}-${file.originalname}`
+    );
   },
 });
 
@@ -49,6 +54,13 @@ const fileFilter = (req, file, cb) => {
 
 const csrfProtection = csrf();
 
+const accessLogStream = fs.createWriteStream(
+  path.join(__dirname, "access.log"),
+  {
+    flags: "a",
+  }
+);
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -60,6 +72,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(helmet());
 app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
 
 const mongoDbStore = connectMongodbSession(session);
 const store = new mongoDbStore({
