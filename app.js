@@ -10,6 +10,7 @@ import csrf from "csurf";
 import flash from "connect-flash";
 import multer from "multer";
 import helmet from "helmet";
+import compression from "compression";
 
 import { __dirname } from "./helper/helper.js";
 
@@ -58,6 +59,7 @@ app.use(multer({ storage: fileStorage, fileFilter }).single("image"));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(helmet());
+app.use(compression());
 
 const mongoDbStore = connectMongodbSession(session);
 const store = new mongoDbStore({
