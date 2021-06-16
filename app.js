@@ -3,6 +3,7 @@ import session from "express-session";
 import bodyParser from "body-parser";
 import path from "path";
 import fs from "fs";
+import https from "https";
 
 import mongoose from "mongoose";
 import connectMongodbSession from "connect-mongodb-session";
@@ -25,6 +26,9 @@ import * as errors from "./controllers/error.js";
 import { User } from "./models/user.js";
 
 console.log("ENVIRONMENT", process.env.NODE_ENV);
+
+const privateKey = fs.readFileSync("server.key");
+const certificate = fs.readFileSync("server.cert");
 
 const MONGODB_URI = `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@cluster0.rsjvy.mongodb.net/${process.env.MONGO_DEFAULT_DB}?retryWrites=true&w=majority`;
 
@@ -131,6 +135,8 @@ app.use((error, req, res, next) => {
 mongoose
   .connect(MONGODB_URI)
   .then((result) => {
-    app.listen(process.env.PORT || 3000);
+    https
+      .createServer({ key: privateKey, cert: certificate }, app)
+      .listen(process.env.PORT || 3000);
   })
   .catch((err) => console.log(err));
