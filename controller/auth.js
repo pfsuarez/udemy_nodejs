@@ -29,7 +29,7 @@ export const signUp = async (req, res, next) => {
     });
 
     await user.save();
-    
+
     res.status(201).json({ message: "User created", userId: user._id });
   } catch (error) {
     next(getCustomError(null, null, error));
@@ -71,8 +71,9 @@ export const login = async (req, res, next) => {
     );
 
     res.status(200).json({ token, userId: userDb._id.toString() });
-
+    return;
   } catch (error) {
     next(getCustomError(null, null, error));
+    return error;
   }
 };

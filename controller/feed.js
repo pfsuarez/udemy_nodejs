@@ -61,12 +61,12 @@ export const createPost = async (req, res, next) => {
     const userDb = await User.findById(userId);
 
     userDb.posts.push(post);
-    await userDb.save();
+    const savedUser = await userDb.save();
 
-    getIO().emit("posts", {
-      action: "create",
-      post: { ...post._doc, creator: { _id: userId, name: userDb.name } },
-    });
+    // getIO().emit("posts", {
+    //   action: "create",
+    //   post: { ...post._doc, creator: { _id: userId, name: userDb.name } },
+    // });
 
     res.status(201).json({
       message: "Post created succesfully",
@@ -76,8 +76,11 @@ export const createPost = async (req, res, next) => {
         name: userDb.name,
       },
     });
+
+    return savedUser;
   } catch (error) {
     next(getCustomError(null, null, error));
+    return Promise.reject(error);
   }
 };
 
@@ -191,8 +194,10 @@ export const getStatus = async (req, res, next) => {
       throw getCustomError("User not found", 404, null);
     }
     res.status(200).json({ status: userDb.status });
+    return;
   } catch (error) {
     next(getCustomError(null, null, error));
+    return Promise.reject(error);
   }
 };
 
