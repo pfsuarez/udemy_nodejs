@@ -4,15 +4,14 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import multer from "multer";
 import { v4 as uuidV4 } from "uuid";
-import { Socket, Server } from "socket.io";
+
+import { graphqlHTTP } from "express-graphql";
 
 import * as configuration from "./helper/configuration.js";
 import { __dirname } from "./helper/path.js";
 
-import feedRoutes from "./routes/feed.js";
-import authRoutes from "./routes/auth.js";
-
-import { setIO, getIO } from "./socket.js";
+import graphqlSchema from "./graphql/schema.js";
+import graphqlResolvers from "./graphql/resolvers.js";
 
 const app = express();
 
@@ -54,8 +53,10 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/feed", feedRoutes);
-app.use("/auth", authRoutes);
+app.use("/graphql", graphqlHTTP({
+  schema: graphqlSchema,
+  rootValue: graphqlResolvers
+}));
 
 app.use((error, req, res, next) => {
   const statusCode = error.statusCode || 500;
@@ -72,12 +73,6 @@ mongoose
   .connect(configuration.MONGODB_URI)
   .then(() => {
     console.log("MongoDb Connected");
-
-    const server = app.listen(8080);
-    setIO(server);
-
-    getIO().on("connection", (socket) => {
-      console.log("CLIENT CONNECTED");
-    });
+    app.listen(8080);
   })
   .catch((err) => console.log("MongoDb Error", err));
