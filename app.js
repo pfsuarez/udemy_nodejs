@@ -61,6 +61,25 @@ app.use((req, res, next) => {
 
 app.use(auth);
 
+app.put("/post-image", (req, res, next) => {
+  if (!req.isAuth) {
+    const error = getCustomError("Not Authenticated", 401);
+    error.code = 401;
+    throw error;
+  }
+
+  if (!req.file) {
+    return res.status(200).json({ message: "No file provided" });
+  }
+  if (req.body.oldPath) {
+    clearImage(req.body.oldPath);
+  }
+
+  return res
+    .status(201)
+    .json({ message: "File stored", filePath: req.file.path });
+});
+
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -102,3 +121,8 @@ mongoose
     app.listen(8080);
   })
   .catch((err) => console.log("MongoDb Error", err));
+
+const clearImage = (filePath) => {
+  filePath = path.join(__dirname, filePath);
+  fs.unlink(filePath, (err) => console.log("ERROR DELETING FILE", err));
+};

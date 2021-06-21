@@ -148,7 +148,7 @@ export default {
       .skip((currentPage - 1) * perPage)
       .limit(perPage);
 
-    const result = {
+    return {
       posts: posts.map((post) => {
         return {
           ...post._doc,
@@ -159,7 +159,5 @@ export default {
       }),
       totalPosts,
     };
-    console.log("RESULT", result);
-    return result;
   },
 };
