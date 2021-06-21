@@ -13,6 +13,8 @@ import { __dirname } from "./helper/path.js";
 import graphqlSchema from "./graphql/schema.js";
 import graphqlResolvers from "./graphql/resolvers.js";
 
+import auth from "./middleware/auth.js";
+
 const app = express();
 
 const fileStorage = multer.diskStorage({
@@ -56,6 +58,8 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+app.use(auth);
 
 app.use(
   "/graphql",

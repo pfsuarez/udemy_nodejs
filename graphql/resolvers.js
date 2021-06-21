@@ -82,6 +82,11 @@ export default {
   },
   createPost: async function ({ postInput }, req) {
     console.log("REQ", req);
+    if (!req.isAuth) {
+      const error = getCustomError("Not Authenticated", 401);
+      error.code = 401;
+      throw error;
+    }
     const errors = [];
     const { title, content, imageUrl } = postInput;
     const userId = req.userId;
@@ -89,7 +94,10 @@ export default {
     if (validator.isEmpty(title) || !validator.isLength(title, { min: 5 })) {
       errors.push("Title is invalid.");
     }
-    if (validator.isEmpty(content) || !validator.isLength(content, { min: 5 })) {
+    if (
+      validator.isEmpty(content) ||
+      !validator.isLength(content, { min: 5 })
+    ) {
       errors.push("Content is invalid.");
     }
     if (errors.length > 0) {
@@ -99,15 +107,23 @@ export default {
       throw error;
     }
 
+    const userDb = await User.findById(userId);
+    if(!userDb) {
+      const error = getCustomError("Invalid User");
+      error.code = 401;
+      throw error;
+    }
+
     const post = new Post({
       title,
       content,
       imageUrl,
-      //creator: userId,
+      creator: userDb
     });
 
     const createdPost = await post.save();
-    // TODO Add post to Users' posts
+    userDb.posts.push(createdPost);
+    await userDb.save();
     return {
       ...createPost._doc,
       _id: createPost._id.toString(),
