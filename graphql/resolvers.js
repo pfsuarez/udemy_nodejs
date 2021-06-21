@@ -131,14 +131,14 @@ export default {
       updatedAt: createdPost.updatedAt.toISOString(),
     };
   },
-  posts: async function (args, req) {
+  posts: async function ({ page }, req) {
     if (!req.isAuth) {
       const error = getCustomError("Not Authenticated", 401);
       error.code = 401;
       throw error;
     }
 
-    const currentPage = req.query.page || 1;
+    const currentPage = page || 1;
     const perPage = 2;
 
     const totalPosts = await Post.find().countDocuments();
