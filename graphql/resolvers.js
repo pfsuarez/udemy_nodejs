@@ -81,7 +81,6 @@ export default {
     };
   },
   createPost: async function ({ postInput }, req) {
-    console.log("REQ", req);
     if (!req.isAuth) {
       const error = getCustomError("Not Authenticated", 401);
       error.code = 401;
@@ -124,11 +123,12 @@ export default {
     const createdPost = await post.save();
     userDb.posts.push(createdPost);
     await userDb.save();
+
     return {
-      ...createPost._doc,
-      _id: createPost._id.toString(),
-      createdAt: createPost.createdAt.toISOString(),
-      updatedAt: createPost.updatedAt.toISOString(),
+      ...createdPost._doc,
+      _id: createdPost._id.toString(),
+      createdAt: createdPost.createdAt.toISOString(),
+      updatedAt: createdPost.updatedAt.toISOString(),
     };
   },
 };
