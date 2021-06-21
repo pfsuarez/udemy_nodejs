@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import validator from "validator";
 
 import { getCustomError } from "../helper/error.js";
 import User from "../models/user.js";
@@ -6,9 +7,23 @@ import User from "../models/user.js";
 export default {
   createUser: async function ({ userInput }, req) {
     const { email, password, name } = userInput;
+    const errors = [];
+    if (!validator.isEmail(email)) {
+      errors.push({ message: "Email is invalid" });
+    }
+    if (
+      validator.isEmpty(password) ||
+      !validator.isLength(password, { min: 5 })
+    ) {
+      errors.push({ message: "Password too short" });
+    }
+    if (errors.length > 0) {
+      throw getCustomError("Invalid input");
+    }
+
     const userDb = await User.findOne({ email });
 
-    if(userDb) {
+    if (userDb) {
       throw getCustomError("User exists already", 500, null);
     }
 
@@ -23,7 +38,7 @@ export default {
 
     return {
       ...createdUser._doc,
-      _id: createdUser._id.toString()
+      _id: createdUser._id.toString(),
     };
   },
 };
