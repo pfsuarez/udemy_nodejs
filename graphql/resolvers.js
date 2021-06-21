@@ -18,7 +18,10 @@ export default {
       errors.push({ message: "Password too short" });
     }
     if (errors.length > 0) {
-      throw getCustomError("Invalid input");
+      const error = getCustomError("Invalid input", 400);
+      error.data = errors;
+      error.code = 422;
+      throw error;
     }
 
     const userDb = await User.findOne({ email });
