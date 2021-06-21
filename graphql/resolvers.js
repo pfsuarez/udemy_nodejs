@@ -107,7 +107,7 @@ export default {
     }
 
     const userDb = await User.findById(userId);
-    if(!userDb) {
+    if (!userDb) {
       const error = getCustomError("Invalid User");
       error.code = 401;
       throw error;
@@ -117,7 +117,7 @@ export default {
       title,
       content,
       imageUrl,
-      creator: userDb
+      creator: userDb,
     });
 
     const createdPost = await post.save();
@@ -130,5 +130,36 @@ export default {
       createdAt: createdPost.createdAt.toISOString(),
       updatedAt: createdPost.updatedAt.toISOString(),
     };
+  },
+  posts: async function (args, req) {
+    if (!req.isAuth) {
+      const error = getCustomError("Not Authenticated", 401);
+      error.code = 401;
+      throw error;
+    }
+
+    const currentPage = req.query.page || 1;
+    const perPage = 2;
+
+    const totalPosts = await Post.find().countDocuments();
+    const posts = await Post.find()
+      .populate("creator")
+      .sort({ createdAt: -1 })
+      .skip((currentPage - 1) * perPage)
+      .limit(perPage);
+
+    const result = {
+      posts: posts.map((post) => {
+        return {
+          ...post._doc,
+          _id: post._id.toString(),
+          createdAt: post.createdAt.toISOString(),
+          updatedAt: post.updatedAt.toISOString(),
+        };
+      }),
+      totalPosts,
+    };
+    console.log("RESULT", result);
+    return result;
   },
 };
