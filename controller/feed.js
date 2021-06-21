@@ -5,7 +5,7 @@ import { validationResult } from "express-validator";
 
 import { getCustomError } from "../helper/error.js";
 import { __dirname } from "../helper/path.js";
-import { getIO } from "../socket.js";
+// import { getIO } from "../socket.js";
 
 import Post from "../models/post.js";
 import User from "../models/user.js";
@@ -63,10 +63,10 @@ export const createPost = async (req, res, next) => {
     userDb.posts.push(post);
     await userDb.save();
 
-    getIO().emit("posts", {
-      action: "create",
-      post: { ...post._doc, creator: { _id: userId, name: userDb.name } },
-    });
+    // getIO().emit("posts", {
+    //   action: "create",
+    //   post: { ...post._doc, creator: { _id: userId, name: userDb.name } },
+    // });
 
     res.status(201).json({
       message: "Post created succesfully",
@@ -120,7 +120,7 @@ export const deletePost = async (req, res, next) => {
     userDb.posts.pull(postId);
     await userDb.save();
 
-    getIO().emit("posts", {action: "delete", post: postId});
+    // getIO().emit("posts", {action: "delete", post: postId});
 
     res.status(200).json({ message: "Post deleted" });
   } catch (error) {
@@ -174,7 +174,7 @@ export const updatePost = async (req, res, next) => {
 
     const result = await post.save();
 
-    getIO().emit("posts", { action: "update", post: result });
+    // getIO().emit("posts", { action: "update", post: result });
     res.status(200).json({ post });
   } catch (error) {
     next(getCustomError(null, null, error));

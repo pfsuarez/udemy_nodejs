@@ -4,7 +4,10 @@ import jwt from "jsonwebtoken";
 
 import { getCustomError } from "../helper/error.js";
 import { jwtSecret } from "../helper/configuration.js";
+
 import User from "../models/user.js";
+import Post from "../models/post.js";
+import { createPost } from "../controller/feed.js";
 
 export default {
   createUser: async function ({ userInput }, req) {
@@ -75,6 +78,41 @@ export default {
     return {
       token,
       userId: userDb._id.toString(),
+    };
+  },
+  createPost: async function ({ postInput }, req) {
+    console.log("REQ", req);
+    const errors = [];
+    const { title, content, imageUrl } = postInput;
+    const userId = req.userId;
+
+    if (validator.isEmpty(title) || !validator.isLength(title, { min: 5 })) {
+      errors.push("Title is invalid.");
+    }
+    if (validator.isEmpty(content) || !validator.isLength(content, { min: 5 })) {
+      errors.push("Content is invalid.");
+    }
+    if (errors.length > 0) {
+      const error = getCustomError("Invalid input", 400);
+      error.data = errors;
+      error.code = 422;
+      throw error;
+    }
+
+    const post = new Post({
+      title,
+      content,
+      imageUrl,
+      //creator: userId,
+    });
+
+    const createdPost = await post.save();
+    // TODO Add post to Users' posts
+    return {
+      ...createPost._doc,
+      _id: createPost._id.toString(),
+      createdAt: createPost.createdAt.toISOString(),
+      updatedAt: createPost.updatedAt.toISOString(),
     };
   },
 };
