@@ -160,4 +160,21 @@ export default {
       totalPosts,
     };
   },
+  post: async function ({ id }, req) {
+    if (!req.isAuth) {
+      throw getCustomError("Not Authenticated", 401);
+    }
+
+    const post = await Post.findById(id).populate("creator");
+    if (!post) {
+      throw getCustomError("Post not found", 404);
+    }
+
+    return {
+      ...post._doc,
+      _id: post._id.toString(),
+      createdAt: post.createdAt.toISOString(),
+      updatedAt: post.updatedAt.toISOString(),
+    };
+  },
 };
