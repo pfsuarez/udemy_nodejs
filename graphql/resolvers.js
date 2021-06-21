@@ -1,7 +1,9 @@
 import bcrypt from "bcryptjs";
 import validator from "validator";
+import jwt from "jsonwebtoken";
 
 import { getCustomError } from "../helper/error.js";
+import { jwtSecret } from "../helper/configuration.js";
 import User from "../models/user.js";
 
 export default {
@@ -42,6 +44,37 @@ export default {
     return {
       ...createdUser._doc,
       _id: createdUser._id.toString(),
+    };
+  },
+  login: async function ({ email, password }) {
+    const userDb = await User.findOne({ email });
+    if (!userDb) {
+      const error = getCustomError("User not found", 401, null);
+      error.code = 401;
+      throw error;
+    }
+
+    const isPasswordEqual = await bcrypt.compare(password, userDb.password);
+    if (!isPasswordEqual) {
+      const error = getCustomError("Wrong password", 401, null);
+      error.code = 401;
+      throw error;
+    }
+
+    const token = jwt.sign(
+      {
+        email: userDb.email,
+        userId: userDb._id.toString(),
+      },
+      jwtSecret,
+      {
+        expiresIn: "1h",
+      }
+    );
+
+    return {
+      token,
+      userId: userDb._id.toString(),
     };
   },
 };
