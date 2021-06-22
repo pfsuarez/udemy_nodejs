@@ -9,6 +9,7 @@ import { graphqlHTTP } from "express-graphql";
 
 import * as configuration from "./helper/configuration.js";
 import { __dirname } from "./helper/path.js";
+import { clearImage } from "./helper/util.js";
 
 import graphqlSchema from "./graphql/schema.js";
 import graphqlResolvers from "./graphql/resolvers.js";
@@ -121,8 +122,3 @@ mongoose
     app.listen(8080);
   })
   .catch((err) => console.log("MongoDb Error", err));
-
-const clearImage = (filePath) => {
-  filePath = path.join(__dirname, filePath);
-  fs.unlink(filePath, (err) => console.log("ERROR DELETING FILE", err));
-};

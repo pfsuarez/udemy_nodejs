@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import validator from "validator";
 import jwt from "jsonwebtoken";
 
+import { clearImage } from "../helper/util.js";
 import { getCustomError } from "../helper/error.js";
 import { jwtSecret } from "../helper/configuration.js";
 
@@ -216,5 +217,31 @@ export default {
       createdAt: updatedPost.createdAt.toISOString(),
       updatedAt: updatedPost.updatedAt.toISOString(),
     };
+  },
+  deletePost: async function ({ id }, req) {
+    if (!req.isAuth) {
+      throw getCustomError("Not Authenticated", 401);
+    }
+
+    const postDb = await Post.findById(id);
+    if (!postDb) {
+      throw getCustomError("Post not found", 404);
+    }
+
+    if (postDb.creator._id.toString() !== req.userId.toString()) {
+      throw getCustomError("Not authorized", 403);
+    }
+
+    const userDb = await User.findById(req.userId);
+
+    if (!userDb) {
+      throw getCustomError("User not found", 404);
+    }
+
+    clearImage(postDb.imageUrl);
+    userDb.posts.pull(id);
+    await userDb.save();
+    await Post.findByIdAndRemove(id);
+    return true;
   },
 };
