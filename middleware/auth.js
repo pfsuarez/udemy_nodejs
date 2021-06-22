@@ -1,6 +1,5 @@
 import jwt from "jsonwebtoken";
 
-import { getCustomError } from "../helper/error.js";
 import { jwtSecret } from "../helper/configuration.js";
 
 export default (req, res, next) => {

@@ -100,10 +100,7 @@ export default {
       errors.push("Content is invalid.");
     }
     if (errors.length > 0) {
-      const error = getCustomError("Invalid input", 400);
-      error.data = errors;
-      error.code = 422;
-      throw error;
+      throw getCustomError("Invalid input", 422);
     }
 
     const userDb = await User.findById(userId);
@@ -175,6 +172,49 @@ export default {
       _id: post._id.toString(),
       createdAt: post.createdAt.toISOString(),
       updatedAt: post.updatedAt.toISOString(),
+    };
+  },
+  updatePost: async function ({ id, postInput }, req) {
+    if (!req.isAuth) {
+      throw getCustomError("Not Authenticated", 401);
+    }
+
+    const postDb = await Post.findById(id).populate("creator");
+    if (!postDb) {
+      throw getCustomError("Post not found", 404);
+    }
+
+    if (postDb.creator._id.toString() !== req.userId.toString()) {
+      throw getCustomError("Not authorized", 403);
+    }
+
+    const errors = [];
+    const { title, content, imageUrl } = postInput;
+    if (validator.isEmpty(title) || !validator.isLength(title, { min: 5 })) {
+      errors.push("Title is invalid.");
+    }
+    if (
+      validator.isEmpty(content) ||
+      !validator.isLength(content, { min: 5 })
+    ) {
+      errors.push("Content is invalid.");
+    }
+    if (errors.length > 0) {
+      throw getCustomError("Invalid input", 422);
+    }
+
+    postDb.title = postInput.title;
+    postDb.content = postInput.content;
+    if (postInput.imageUrl !== "undefined") {
+      postDb.imageUrl = postInput.imageUrl;
+    }
+    const updatedPost = await postDb.save();
+
+    return {
+      ...updatedPost._doc,
+      _id: updatedPost._id.toString(),
+      createdAt: updatedPost.createdAt.toISOString(),
+      updatedAt: updatedPost.updatedAt.toISOString(),
     };
   },
 };
