@@ -244,4 +244,39 @@ export default {
     await Post.findByIdAndRemove(id);
     return true;
   },
+  user: async function (args, req) {
+    if (!req.isAuth) {
+      throw getCustomError("Not Authenticated", 401);
+    }
+
+    const userDb = await User.findById(req.userId);
+
+    if (!userDb) {
+      throw getCustomError("User not found", 404);
+    }
+
+    return {
+      ...userDb._doc,
+      _id: userDb._id.toString(),
+    };
+  },
+  updateStatus: async function ({status}, req) {
+    if (!req.isAuth) {
+      throw getCustomError("Not Authenticated", 401);
+    }
+
+    const userDb = await User.findById(req.userId);
+
+    if (!userDb) {
+      throw getCustomError("User not found", 404);
+    }
+
+    userDb.status = status;
+    const savedUser = await userDb.save();
+
+    return {
+      ...savedUser._doc,
+      _id: savedUser._id.toString(),
+    };
+  }
 };
